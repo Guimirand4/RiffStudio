@@ -134,8 +134,8 @@ export function NoteHighway({
     const timeline = timelineRef.current;
     const currentBeatIdx = currentBeatRef.current;
     const bpm = bpmRef.current;
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.clientWidth;
+    const H = canvas.clientHeight;
 
     // ── Layout Geometry ──
     const NECK_HEIGHT = 160;

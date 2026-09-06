@@ -201,7 +201,9 @@ export function Player({ song, onBack }: PlayerProps) {
 
   // ── Music Mode Callbacks ───────────────────────────────────────────────────
   const handlePlayerStateChanged = useCallback((args: any) => {
-    setPlayerState(args.state);
+    // alphaTab sometimes passes the state directly, or in an args object
+    const newState = args?.state !== undefined ? args.state : args;
+    setPlayerState(newState);
   }, []);
 
   const handlePlayerPositionChanged = useCallback((args: any) => {
