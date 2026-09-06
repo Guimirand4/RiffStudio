@@ -77,6 +77,7 @@ export function Player({ song, onBack }: PlayerProps) {
   const playbackPositionMsRef = useRef(0);
   const hitBeatsRef = useRef<Set<number>>(new Set());
   const missedBeatsRef = useRef<Set<number>>(new Set());
+  const playModeRef = useRef<PlayMode>(playMode);
 
   // ── Arcade feedback ────────────────────────────────────────────────────────
   const [lastHit, setLastHit] = useState<HitFeedback | null>(null);
@@ -122,14 +123,17 @@ export function Player({ song, onBack }: PlayerProps) {
   useEffect(() => { loopBRef.current = loopB; }, [loopB]);
   useEffect(() => { loopActiveRef.current = loopActive; }, [loopActive]);
   useEffect(() => { playbackPositionMsRef.current = playbackPositionMs; }, [playbackPositionMs]);
+  useEffect(() => { playModeRef.current = playMode; }, [playMode]);
 
   // Handle Play Mode Switch (Mute logic)
   useEffect(() => {
     if (playMode === 'music') {
+      tabRef.current?.clearPlaybackRange();
       tabRef.current?.muteTrack(0, true);
     } else {
       tabRef.current?.pause();
       tabRef.current?.muteTrack(0, false);
+      tabRef.current?.goToBeat(beatIndexRef.current);
       // Reset hits so they can be played again
       hitBeatsRef.current.clear();
       missedBeatsRef.current.clear();
@@ -172,7 +176,9 @@ export function Player({ song, onBack }: PlayerProps) {
 
     const note = tabRef.current?.getNoteAtBeat(idx) ?? null;
     setExpectedNote(note);
-    tabRef.current?.goToBeat(idx);
+    if (playModeRef.current === 'practice') {
+      tabRef.current?.goToBeat(idx);
+    }
     setCurrentBeatIndex(idx);
     beatIndexRef.current = idx;
 
@@ -248,7 +254,6 @@ export function Player({ song, onBack }: PlayerProps) {
       setCurrentBeatIndex(newBeatIdx);
       beatIndexRef.current = newBeatIdx;
       setExpectedNote(tabRef.current?.getNoteAtBeat(newBeatIdx) ?? null);
-      tabRef.current?.goToBeat(newBeatIdx);
     }
   }, [playMode]);
 
@@ -618,6 +623,10 @@ export function Player({ song, onBack }: PlayerProps) {
           {/* Music Mode Controls */}
           {playMode === 'music' && (
             <div className={styles.musicControls}>
+              <div style={{ marginBottom: '12px', fontSize: '13px', color: '#ffb86c', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 184, 108, 0.1)', padding: '8px', borderRadius: '4px' }}>
+                <span>🎧</span>
+                <span>Use fones de ouvido para evitar que o microfone ouça a música.</span>
+              </div>
               <button
                 className={`btn btn-lg ${playerState === 1 ? 'btn-danger' : 'btn-primary'}`}
                 style={{ width: '100%', marginBottom: '8px' }}

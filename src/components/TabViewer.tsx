@@ -28,6 +28,8 @@ export interface TabViewerRef {
   play: () => void;
   pause: () => void;
   playPause: () => void;
+  /** Clears any restricted playback range so the song can play fully. */
+  clearPlaybackRange: () => void;
   /** Speed multiplier (e.g. 1.0 = 100%, 0.5 = 50%) */
   setPlaybackSpeed: (speed: number) => void;
   /** Mute or unmute a specific track by index (0 is usually the main guitar) */
@@ -247,6 +249,13 @@ export const TabViewer = forwardRef<TabViewerRef, TabViewerProps>(function TabVi
     play() { apiRef.current?.play(); },
     pause() { apiRef.current?.pause(); },
     playPause() { apiRef.current?.playPause(); },
+    clearPlaybackRange() {
+      if (apiRef.current) {
+        try {
+          (apiRef.current as any).playbackRange = null;
+        } catch { }
+      }
+    },
     setPlaybackSpeed(speed: number) {
       if (apiRef.current) apiRef.current.playbackSpeed = speed;
     },

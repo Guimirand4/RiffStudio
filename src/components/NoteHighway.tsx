@@ -2,27 +2,7 @@
  * NoteHighway.tsx
  *
  * Canvas-based "Guitar Hero / Yousician" style visualizer.
- *
- * Layout (horizontal scroll, right → left):
- *
- *  String 6 (E2) ━━━━━━━━━━━━━●━━━━━━━━━━━━●━━━━ |
- *  String 5 (A2) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ |
- *  String 4 (D3) ━━━━━━━━━●━━━━━━━━━━━━━━━━━━━━━━ |
- *  String 3 (G3) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ |
- *  String 2 (B3) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ |
- *  String 1  (e4) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ |
- *                                                  ↑
- *                                          Hit line (fixed)
- *
- * Clock model: PLAYER-DRIVEN (Option A).
- * The current expected beat is always anchored to the hit line.
- * Notes don't scroll in real-time — they advance when the player hits a note.
- * This matches the existing tablature mode philosophy.
- *
- * Feedback system:
- * - Receives `lastHit` prop from Player (updated on every noteOnset).
- * - Triggers per-lane flash animation with label "Perfect! ✨", "Bom! 👍" or "Errou!".
- * - Flash fades out over ~700ms via requestAnimationFrame.
+ * Redesigned for a sleek, compact 3D-ish feel.
  */
 
 import { useEffect, useRef, useCallback } from 'react';
@@ -30,14 +10,10 @@ import type { BeatStringNote } from '../lib/beatTimeline';
 import type { MatchResult } from '../lib/noteMatcher';
 import styles from './NoteHighway.module.css';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 export interface HitFeedback {
-  /** Monotonically increasing ID — ensures identical results still trigger effects. */
   id: number;
   correct: boolean;
   timingMs: number;
-  /** Strings active in the beat that was attempted (for coloring the flash). */
   strings: number[];
   matchResult: MatchResult;
 }
@@ -51,44 +27,31 @@ interface NoteHighwayProps {
   playbackPositionMs: number;
 }
 
-// ─── Visual constants ─────────────────────────────────────────────────────────
-
 const NUM_STRINGS = 6;
-const LABEL_WIDTH = 72;          // px reserved for string labels on the left
-const HIT_LINE_OFFSET = 30;     // extra px between label area and hit line
-const HIT_LINE_X = LABEL_WIDTH + HIT_LINE_OFFSET;  // x of the hit line
-const NOTE_RADIUS = 15;
-const FLASH_DURATION_MS = 700;
+const LABEL_WIDTH = 40;
+const HIT_LINE_OFFSET = 60;
+const HIT_LINE_X = LABEL_WIDTH + HIT_LINE_OFFSET;
+const NOTE_RADIUS = 13;
+const FLASH_DURATION_MS = 600;
 
 /** How many beats to show ahead of the hit line. Controls visual density. */
-const LOOKAHEAD_BEATS = 5;
+const LOOKAHEAD_BEATS = 4;
 
-/** String 6 at top, string 1 at bottom — mirrors guitar orientation in hands. */
-const STRING_ORDER = [6, 5, 4, 3, 2, 1] as const;
+/** Standard tab order: 1 (high e) at top, 6 (low E) at bottom. */
+const STRING_ORDER = [1, 2, 3, 4, 5, 6] as const;
 
-/** Note names for string labels. */
 const STRING_LABEL: Record<number, string> = {
-  6: 'E', 5: 'A', 4: 'D', 3: 'G', 2: 'B', 1: 'e',
+  1: 'e', 2: 'B', 3: 'G', 4: 'D', 5: 'A', 6: 'E',
 };
 
-/** Vibrant neon colors per string — warms (bass) to cools (treble). */
+/** Yousician-inspired bright colors */
 const STRING_COLOR: Record<number, string> = {
-  6: '#FF4757', // E2 — neon red
-  5: '#FF9F43', // A2 — orange
-  4: '#FFD32A', // D3 — yellow
-  3: '#39ff14', // G3 — neon green (matches RiffStudio accent)
-  2: '#00D4FF', // B3 — cyan
-  1: '#A855F7', // e4 — purple
-};
-
-/** Dim version of each string color for lane backgrounds. */
-const STRING_LANE_BG: Record<number, string> = {
-  6: 'rgba(255, 71, 87, 0.04)',
-  5: 'rgba(255, 159, 67, 0.04)',
-  4: 'rgba(255, 211, 42, 0.04)',
-  3: 'rgba(57, 255, 20, 0.04)',
-  2: 'rgba(0, 212, 255, 0.04)',
-  1: 'rgba(168, 85, 247, 0.04)',
+  1: '#A855F7', // e - purple
+  2: '#00D4FF', // B - cyan
+  3: '#39ff14', // G - green
+  4: '#FFD32A', // D - yellow
+  5: '#FF9F43', // A - orange
+  6: '#FF4757', // E - red
 };
 
 function hexToRgba(hex: string, alpha: number) {
@@ -105,8 +68,6 @@ interface FlashState {
   startTime: number;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export function NoteHighway({
   timeline,
   currentBeatIndex,
@@ -119,7 +80,7 @@ export function NoteHighway({
   const flashesRef = useRef<FlashState[]>([]);
   const rafRef = useRef<number>(0);
 
-  // Stable refs to avoid stale closures in the RAF loop
+  // Stable refs for RAF loop
   const timelineRef = useRef(timeline);
   const currentBeatRef = useRef(currentBeatIndex);
   const bpmRef = useRef(bpm);
@@ -150,7 +111,6 @@ export function NoteHighway({
         : '#ffd32a'
       : '#ff4757';
 
-    // Flash all strings that were in the beat (correct), or all active strings (wrong)
     const stringsToFlash = lastHit.strings.length > 0 ? lastHit.strings : [6];
 
     const newFlashes: FlashState[] = stringsToFlash.map((s) => ({
@@ -176,130 +136,144 @@ export function NoteHighway({
     const bpm = bpmRef.current;
     const W = canvas.width;
     const H = canvas.height;
-    const LANE_H = H / NUM_STRINGS;
+
+    // ── Layout Geometry ──
+    const NECK_HEIGHT = 160;
+    // Align neck in the lower half
+    const NECK_TOP = H - NECK_HEIGHT - 30; 
+    const LANE_H = NECK_HEIGHT / NUM_STRINGS;
 
     // DPR-aware clear
     ctx.clearRect(0, 0, W, H);
 
     // ── Background ──────────────────────────────────────────────────────────────
-    ctx.fillStyle = '#0a0a0f';
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+    bgGrad.addColorStop(0, '#0f172a');
+    bgGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, W, H);
 
-    // Helper: center Y of a lane for a given string number
+    // Neck background subtle tint
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillRect(0, NECK_TOP - 10, W, NECK_HEIGHT + 20);
+
     const laneY = (s: number) => {
       const idx = STRING_ORDER.indexOf(s as typeof STRING_ORDER[number]);
-      return idx * LANE_H + LANE_H / 2;
+      return NECK_TOP + idx * LANE_H + LANE_H / 2;
     };
 
-    // ── Lane backgrounds and labels ─────────────────────────────────────────────
+    // ── Strings and Labels ──────────────────────────────────────────────────────
     STRING_ORDER.forEach((s) => {
       const y = laneY(s);
-      const top = y - LANE_H / 2;
 
-      // Lane tint
-      ctx.fillStyle = STRING_LANE_BG[s];
-      ctx.fillRect(0, top, W, LANE_H);
-
-      // Lane separator line
-      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-      ctx.lineWidth = 1;
+      // String line
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(0, top);
-      ctx.lineTo(W, top);
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
       ctx.stroke();
 
-      // Label area background
-      ctx.fillStyle = 'rgba(10,10,15,0.9)';
-      ctx.fillRect(0, top, LABEL_WIDTH, LANE_H);
+      // String core (inner highlight)
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
 
-      // String number + note name
+      // Label
       const color = STRING_COLOR[s];
       ctx.fillStyle = color;
-      ctx.font = 'bold 13px Inter, system-ui, sans-serif';
+      ctx.font = 'bold 16px Inter, system-ui, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`${s}  ${STRING_LABEL[s]}`, LABEL_WIDTH / 2, y);
+      ctx.fillText(STRING_LABEL[s], LABEL_WIDTH / 2, y);
     });
 
-    // ── Hit line ──────────────────────────────────────────────────────────────────
-    // Glow behind the hit line
-    const glowGrad = ctx.createLinearGradient(HIT_LINE_X - 20, 0, HIT_LINE_X + 20, 0);
-    glowGrad.addColorStop(0, 'transparent');
-    glowGrad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
-    glowGrad.addColorStop(1, 'transparent');
-    ctx.fillStyle = glowGrad;
-    ctx.fillRect(HIT_LINE_X - 20, 0, 40, H);
-
-    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-    ctx.lineWidth = 2;
+    // ── Hit line ────────────────────────────────────────────────────────────────
+    ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(HIT_LINE_X, 0);
-    ctx.lineTo(HIT_LINE_X, H);
+    ctx.moveTo(HIT_LINE_X, NECK_TOP - 20);
+    ctx.lineTo(HIT_LINE_X, NECK_TOP + NECK_HEIGHT + 20);
     ctx.stroke();
 
-    // ── Compute px/ms for this BPM ───────────────────────────────────────────────
+    // Hit line glow
+    const glowGrad = ctx.createLinearGradient(HIT_LINE_X - 20, 0, HIT_LINE_X + 20, 0);
+    glowGrad.addColorStop(0, 'transparent');
+    glowGrad.addColorStop(0.5, 'rgba(255,255,255,0.2)');
+    glowGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = glowGrad;
+    ctx.fillRect(HIT_LINE_X - 20, NECK_TOP - 20, 40, NECK_HEIGHT + 40);
+
+    // ── Compute px/ms ──────────────────────────────────────────────────────────
     const quarterMs = 60_000 / bpm;
     const lookaheadMs = LOOKAHEAD_BEATS * quarterMs;
     const availableWidth = W - HIT_LINE_X - 16;
     const pxPerMs = availableWidth / lookaheadMs;
 
-    // ── Note positions ────────────────────────────────────────────────────────────
     const currentTimeMs = playbackPositionMsRef.current;
+    const MIN_X = LABEL_WIDTH - 200; // allow long pills to pass off-screen safely
+    const MAX_X = W + 200;
 
-    const MIN_X = LABEL_WIDTH - NOTE_RADIUS * 3;
-    const MAX_X = W + NOTE_RADIUS;
-
-    // Draw in two passes: past first (so current overlays them)
     const visibleBeats = timeline.filter((beat) => {
       if (beat.isRest) return false;
       const x = HIT_LINE_X + (beat.timePositionMs - currentTimeMs) * pxPerMs;
       return x >= MIN_X && x <= MAX_X;
     });
 
+    // ── Draw Notes (Pills) ──────────────────────────────────────────────────────
     visibleBeats.forEach((beat) => {
       const x = HIT_LINE_X + (beat.timePositionMs - currentTimeMs) * pxPerMs;
       const isPast = beat.beatIndex < currentBeatIdx;
       const isCurrent = beat.beatIndex === currentBeatIdx;
 
+      // Note duration width
+      // Subtracting a bit so consecutive notes have a gap
+      const rawWidth = beat.durationMs * pxPerMs;
+      const pillWidth = Math.max(NOTE_RADIUS * 2, rawWidth - 6);
+      
       beat.notes.forEach((note) => {
         const y = laneY(note.stringNumber);
         const color = STRING_COLOR[note.stringNumber];
-        const alpha = isPast ? 0.2 : isCurrent ? 1.0 : 0.8;
+        const alpha = isPast ? 0.2 : isCurrent ? 1.0 : 0.85;
 
         ctx.save();
         ctx.globalAlpha = alpha;
 
-        if (isCurrent) {
-          // Outer glow ring for the expected note
-          const glow = ctx.createRadialGradient(x, y, NOTE_RADIUS, x, y, NOTE_RADIUS * 2.8);
-          glow.addColorStop(0, hexToRgba(color, 0.5));
-          glow.addColorStop(1, 'transparent');
-          // Simplified glow: just a larger semi-transparent circle
-          ctx.fillStyle = color;
-          ctx.globalAlpha = alpha * 0.25;
-          ctx.beginPath();
-          ctx.arc(x, y, NOTE_RADIUS * 2.5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.globalAlpha = alpha;
+        const rightArcX = x + pillWidth - NOTE_RADIUS * 2;
 
-          // Pulsing ring
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(x, y, NOTE_RADIUS + 4, 0, Math.PI * 2);
-          ctx.stroke();
-        }
-
-        // Main note circle
+        // Draw pill shape
         ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(x, y, NOTE_RADIUS, 0, Math.PI * 2);
+        // Left half-circle
+        ctx.arc(x, y, NOTE_RADIUS, Math.PI / 2, Math.PI * 1.5);
+        // Top edge
+        ctx.lineTo(rightArcX, y - NOTE_RADIUS);
+        // Right half-circle
+        ctx.arc(rightArcX, y, NOTE_RADIUS, Math.PI * 1.5, Math.PI / 2);
+        // Bottom edge
+        ctx.closePath();
         ctx.fill();
 
-        // Fret number (white text on colored circle)
+        // Highlight stroke if current
+        if (isCurrent) {
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // Subtle glow
+          ctx.shadowColor = color;
+          ctx.shadowBlur = 10;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+
+        // Fret number text
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = alpha < 0.5 ? color : '#000';
-        ctx.font = `bold 11px Inter, system-ui, sans-serif`;
+        ctx.fillStyle = alpha < 0.5 ? color : '#111'; // dark text for high contrast on neon
+        ctx.font = `bold 12px Inter, system-ui, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(String(note.fret), x, y);
@@ -308,7 +282,7 @@ export function NoteHighway({
       });
     });
 
-    // ── Flash overlays ────────────────────────────────────────────────────────────
+    // ── Flash overlays ──────────────────────────────────────────────────────────
     const now = performance.now();
     flashesRef.current = flashesRef.current.filter(
       (f) => now - f.startTime < FLASH_DURATION_MS,
@@ -316,30 +290,31 @@ export function NoteHighway({
 
     flashesRef.current.forEach((flash) => {
       const elapsed = now - flash.startTime;
-      const t = elapsed / FLASH_DURATION_MS;         // 0 → 1
-      const flashAlpha = Math.max(0, 1 - t) * 0.55;
+      const t = elapsed / FLASH_DURATION_MS;
+      const flashAlpha = Math.max(0, 1 - t) * 0.7;
       const labelAlpha = Math.max(0, 1 - t * 2.5);
 
       const y = laneY(flash.stringNumber);
-      const LANE_H_ = H / NUM_STRINGS;
 
       ctx.save();
-
-      // Lane flash rectangle
+      
+      // Hit flash explosion
       ctx.globalAlpha = flashAlpha;
       ctx.fillStyle = flash.color;
-      ctx.fillRect(HIT_LINE_X - 24, y - LANE_H_ / 2, 80, LANE_H_);
+      ctx.beginPath();
+      ctx.arc(HIT_LINE_X, y, NOTE_RADIUS * 2.5 + (t * 20), 0, Math.PI * 2);
+      ctx.fill();
 
-      // Hit label — floats upward as it fades
-      const labelY = y - t * 18;
+      // Floating label
+      const labelY = y - t * 25 - 15;
       ctx.globalAlpha = labelAlpha;
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 14px Inter, system-ui, sans-serif';
-      ctx.textAlign = 'left';
+      ctx.font = '900 16px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.shadowColor = flash.color;
-      ctx.shadowBlur = 8;
-      ctx.fillText(flash.label, HIT_LINE_X + 38, labelY);
+      ctx.shadowBlur = 10;
+      ctx.fillText(flash.label, HIT_LINE_X, labelY);
       ctx.shadowBlur = 0;
 
       ctx.restore();
@@ -348,13 +323,13 @@ export function NoteHighway({
     // ── Idle overlay ────────────────────────────────────────────────────────────
     if (!isActiveRef.current) {
       ctx.save();
-      ctx.fillStyle = 'rgba(10,10,15,0.6)';
-      ctx.fillRect(LABEL_WIDTH, 0, W - LABEL_WIDTH, H);
-      ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.font = '500 15px Inter, system-ui, sans-serif';
+      ctx.fillStyle = 'rgba(15,23,42,0.7)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 16px Inter, system-ui, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('Clique em Começar Treino para iniciar', (W + LABEL_WIDTH) / 2, H / 2);
+      ctx.fillText('Clique em Tocar Música ou Começar Treino', W / 2, H / 2 - 20);
       ctx.restore();
     }
   }, []);
@@ -369,7 +344,7 @@ export function NoteHighway({
     return () => cancelAnimationFrame(rafRef.current);
   }, [draw]);
 
-  // ── Resize handling ───────────────────────────────────────────────────────────
+  // ── Resize handling ──────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -396,3 +371,4 @@ export function NoteHighway({
     </div>
   );
 }
+
