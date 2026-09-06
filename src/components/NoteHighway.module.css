@@ -1,0 +1,22 @@
+/* NoteHighway.module.css */
+
+.highway {
+  width: 100%;
+  height: 100%;
+  min-height: 340px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #0a0a0f;
+  border: 1px solid var(--border-card);
+  position: relative;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* 
+    Canvas CSS size matches container.
+    Pixel size is set in JS via ResizeObserver for DPR-aware rendering.
+  */
+}

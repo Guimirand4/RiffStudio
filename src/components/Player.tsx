@@ -6,6 +6,11 @@ import { NoteHistory } from './NoteHistory';
 import { PracticeControls } from './PracticeControls';
 import { InputLevelMeter } from './InputLevelMeter';
 import { LoopControls } from './LoopControls';
+import { ModeToggle, loadViewMode, saveViewMode } from './ModeToggle';
+import type { ViewMode } from './ModeToggle';
+import { NoteHighway } from './NoteHighway';
+import type { HitFeedback } from './NoteHighway';
+import type { BeatStringNote } from '../lib/beatTimeline';
 import { getAudioEngine, resetAudioEngine } from '../audio/audioEngine';
 import type { DetectedNote } from '../audio/pitchDetector';
 import { matchNote } from '../lib/noteMatcher';
@@ -58,6 +63,15 @@ export function Player({ song, onBack }: PlayerProps) {
   const [currentBeatIndex, setCurrentBeatIndex] = useState(0);
   const [totalBeats, setTotalBeats] = useState(0);
   const [expectedNote, setExpectedNote] = useState<string | null>(null);
+
+  // ── View mode ──────────────────────────────────────────────────────────────
+  const [viewMode, setViewMode] = useState<ViewMode>(loadViewMode);
+  const [timeline, setTimeline] = useState<BeatStringNote[]>([]);
+  const timelineRef = useRef<BeatStringNote[]>([]);
+
+  // ── Arcade feedback ────────────────────────────────────────────────────────
+  const [lastHit, setLastHit] = useState<HitFeedback | null>(null);
+  const hitIdRef = useRef(0);
 
   // ── Audio state ────────────────────────────────────────────────────────────
   const [listeningState, setListeningState] = useState<ListeningState>('idle');
@@ -147,7 +161,12 @@ export function Player({ song, onBack }: PlayerProps) {
     setTotalBeats(beats);
     totalBeatsRef.current = beats;
     advanceTo(0);
-  }, [advanceTo]);
+    // Build the arcade timeline once, right after the score is parsed.
+    // tabRef.getTimeline() reads from beatsRef inside TabViewer — always fresh.
+    const tl = tabRef.current?.getTimeline(song.bpm) ?? [];
+    timelineRef.current = tl;
+    setTimeline(tl);
+  }, [advanceTo, song.bpm]);
 
   /** Core matching handler — called on noteOnset events only. */
   const handleNoteOnset = useCallback((e: CustomEvent<DetectedNote>) => {
@@ -181,6 +200,21 @@ export function Player({ song, onBack }: PlayerProps) {
       correct: result.isMatch,
       timingMs,
     };
+
+    // ── Arcade feedback ──────────────────────────────────────────────────────
+    // Get string numbers for the current expected beat (for lane flash in NoteHighway)
+    const beatStrings = timelineRef.current[beatIndex]?.notes.map((n) => n.stringNumber) ?? [];
+    const label = result.isMatch
+      ? timingMs < 80 ? 'Perfect! ✨' : timingMs < 160 ? 'Bom! 👍' : 'OK'
+      : 'Errou!';
+    void label; // used inside NoteHighway via HitFeedback.strings
+    setLastHit({
+      id: ++hitIdRef.current,
+      correct: result.isMatch,
+      timingMs,
+      strings: beatStrings,
+      matchResult: result,
+    });
 
     setSessionStats((prev) => {
       const newResults = [...prev.noteResults, noteResult];
@@ -248,6 +282,8 @@ export function Player({ song, onBack }: PlayerProps) {
     refractoryUntilRef.current = 0;
     advanceTo(0);
     setSessionStats({ notesAttempted: 0, notesCorrect: 0, startTime: Date.now(), avgTimingMs: 0, noteResults: [] });
+    setLastHit(null);
+    hitIdRef.current = 0;
   }, [advanceTo]);
 
   // ── Loop A-B handlers ──────────────────────────────────────────────────────
@@ -317,6 +353,12 @@ export function Player({ song, onBack }: PlayerProps) {
           <h1 className={styles.songTitle}>{song.title}</h1>
           <span className={styles.songArtist}>{song.artist}</span>
         </div>
+        {/* Mode toggle — center-right of header */}
+        <ModeToggle
+          mode={viewMode}
+          arcadeReady={timeline.length > 0}
+          onChange={(m) => { setViewMode(m); saveViewMode(m); }}
+        />
         <div className={styles.bpm}>
           <span className={styles.bpmValue}>{song.bpm}</span>
           <span className={styles.bpmLabel}>BPM</span>
@@ -333,14 +375,49 @@ export function Player({ song, onBack }: PlayerProps) {
 
       {/* Main layout */}
       <div className={styles.layout}>
-        {/* Tab viewer */}
-        <div className={styles.tabArea}>
-          <TabViewer
-            ref={tabRef}
-            alphaTex={song.alphaTex}
-            onScoreLoaded={handleScoreLoaded}
-            onError={(err) => setAudioError(err)}
-          />
+        {/* Tab viewer / Arcade — same DOM slot, crossfade between modes */}
+        <div className={styles.tabArea} style={{ position: 'relative' }}>
+          {/* TabViewer stays mounted even in arcade mode so its beatsRef/cursor stay live */}
+          <div
+            style={{
+              opacity: viewMode === 'arcade' ? 0 : 1,
+              pointerEvents: viewMode === 'arcade' ? 'none' : 'auto',
+              transition: 'opacity 0.25s ease',
+              height: viewMode === 'arcade' ? 0 : 'auto',
+              overflow: viewMode === 'arcade' ? 'hidden' : 'visible',
+            }}
+          >
+            <TabViewer
+              ref={tabRef}
+              alphaTex={song.alphaTex}
+              onScoreLoaded={handleScoreLoaded}
+              onError={(err) => setAudioError(err)}
+            />
+          </div>
+
+          {/* NoteHighway — rendered in arcade mode once timeline is ready */}
+          {timeline.length > 0 && (
+            <div
+              style={{
+                opacity: viewMode === 'arcade' ? 1 : 0,
+                pointerEvents: viewMode === 'arcade' ? 'auto' : 'none',
+                transition: 'opacity 0.25s ease',
+                position: viewMode === 'arcade' ? 'relative' : 'absolute',
+                inset: 0,
+                height: viewMode === 'arcade' ? '100%' : 0,
+                overflow: 'hidden',
+                minHeight: viewMode === 'arcade' ? 340 : 0,
+              }}
+            >
+              <NoteHighway
+                timeline={timeline}
+                currentBeatIndex={currentBeatIndex}
+                bpm={song.bpm}
+                isActive={listeningState === 'running'}
+                lastHit={lastHit}
+              />
+            </div>
+          )}
         </div>
 
         {/* Right sidebar */}

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import * as alphaTab from '@coderline/alphatab';
+import { extractBeatTimeline } from '../lib/beatTimeline';
+import type { BeatStringNote } from '../lib/beatTimeline';
 import styles from './TabViewer.module.css';
 
 export interface TabViewerRef {
@@ -15,6 +17,12 @@ export interface TabViewerRef {
   getTotalBeats: () => number;
   /** Reset highlight to beat 0. */
   reset: () => void;
+  /**
+   * Build a BeatStringNote[] timeline for the Arcade (Note Highway) mode.
+   * Call once after onScoreLoaded fires. Result is stable until the song changes.
+   * @param bpm - song BPM; must match the \tempo in the .alphatex for accurate timing.
+   */
+  getTimeline: (bpm: number) => BeatStringNote[];
 }
 
 interface TabViewerProps {
@@ -207,6 +215,10 @@ export const TabViewer = forwardRef<TabViewerRef, TabViewerProps>(function TabVi
 
     reset(): void {
       this.goToBeat(0);
+    },
+
+    getTimeline(bpm: number): BeatStringNote[] {
+      return extractBeatTimeline(beatsRef.current, bpm);
     },
   }));
 
