@@ -8,25 +8,33 @@
  */
 
 export type ViewMode = 'tab' | 'arcade';
+export type PlayMode = 'practice' | 'music';
 
-const STORAGE_KEY = 'riffstudio-view-mode';
+const VIEW_STORAGE_KEY = 'riffstudio-view-mode';
+const PLAY_STORAGE_KEY = 'riffstudio-play-mode';
 
 export function loadViewMode(): ViewMode {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(VIEW_STORAGE_KEY);
     if (saved === 'tab' || saved === 'arcade') return saved;
-  } catch {
-    // localStorage unavailable (private browsing, Tauri sandbox edge case)
-  }
-  return 'tab'; // default
+  } catch { }
+  return 'tab';
 }
 
 export function saveViewMode(mode: ViewMode): void {
+  try { localStorage.setItem(VIEW_STORAGE_KEY, mode); } catch { }
+}
+
+export function loadPlayMode(): PlayMode {
   try {
-    localStorage.setItem(STORAGE_KEY, mode);
-  } catch {
-    // ignore
-  }
+    const saved = localStorage.getItem(PLAY_STORAGE_KEY);
+    if (saved === 'practice' || saved === 'music') return saved;
+  } catch { }
+  return 'practice';
+}
+
+export function savePlayMode(mode: PlayMode): void {
+  try { localStorage.setItem(PLAY_STORAGE_KEY, mode); } catch { }
 }
 
 interface ModeToggleProps {
@@ -59,6 +67,34 @@ export function ModeToggle({ mode, onChange, arcadeReady }: ModeToggleProps) {
         title={arcadeReady ? 'Modo Arcade — pista de notas estilo Guitar Hero' : 'Carregando...'}
       >
         🎮 Arcade
+      </button>
+    </div>
+  );
+}
+
+interface PlayModeToggleProps {
+  mode: PlayMode;
+  onChange: (mode: PlayMode) => void;
+}
+
+export function PlayModeToggle({ mode, onChange }: PlayModeToggleProps) {
+  return (
+    <div className={styles.toggle} role="group" aria-label="Modo de treino">
+      <button
+        className={`${styles.btn} ${mode === 'practice' ? styles.active : ''}`}
+        onClick={() => onChange('practice')}
+        aria-pressed={mode === 'practice'}
+        title="Modo Prática — no seu tempo, sem pressão"
+      >
+        🐢 Prática
+      </button>
+      <button
+        className={`${styles.btn} ${mode === 'music' ? styles.active : ''}`}
+        onClick={() => onChange('music')}
+        aria-pressed={mode === 'music'}
+        title="Modo Música — tempo real, playback ativo"
+      >
+        🔥 Música
       </button>
     </div>
   );

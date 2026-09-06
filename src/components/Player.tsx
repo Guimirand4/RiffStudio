@@ -6,8 +6,8 @@ import { NoteHistory } from './NoteHistory';
 import { PracticeControls } from './PracticeControls';
 import { InputLevelMeter } from './InputLevelMeter';
 import { LoopControls } from './LoopControls';
-import { ModeToggle, loadViewMode, saveViewMode } from './ModeToggle';
-import type { ViewMode } from './ModeToggle';
+import { ModeToggle, loadViewMode, saveViewMode, PlayModeToggle, loadPlayMode, savePlayMode } from './ModeToggle';
+import type { ViewMode, PlayMode } from './ModeToggle';
 import { NoteHighway } from './NoteHighway';
 import type { HitFeedback } from './NoteHighway';
 import type { BeatStringNote } from '../lib/beatTimeline';
@@ -64,10 +64,19 @@ export function Player({ song, onBack }: PlayerProps) {
   const [totalBeats, setTotalBeats] = useState(0);
   const [expectedNote, setExpectedNote] = useState<string | null>(null);
 
-  // ── View mode ──────────────────────────────────────────────────────────────
+  // ── View & Play mode ───────────────────────────────────────────────────────
   const [viewMode, setViewMode] = useState<ViewMode>(loadViewMode);
+  const [playMode, setPlayMode] = useState<PlayMode>(loadPlayMode);
   const [timeline, setTimeline] = useState<BeatStringNote[]>([]);
   const timelineRef = useRef<BeatStringNote[]>([]);
+
+  // ── Music Mode (Playback) State ────────────────────────────────────────────
+  const [playerState, setPlayerState] = useState(0); // 0=paused, 1=playing
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [playbackPositionMs, setPlaybackPositionMs] = useState(0);
+  const playbackPositionMsRef = useRef(0);
+  const hitBeatsRef = useRef<Set<number>>(new Set());
+  const missedBeatsRef = useRef<Set<number>>(new Set());
 
   // ── Arcade feedback ────────────────────────────────────────────────────────
   const [lastHit, setLastHit] = useState<HitFeedback | null>(null);
@@ -112,6 +121,20 @@ export function Player({ song, onBack }: PlayerProps) {
   useEffect(() => { loopARef.current = loopA; }, [loopA]);
   useEffect(() => { loopBRef.current = loopB; }, [loopB]);
   useEffect(() => { loopActiveRef.current = loopActive; }, [loopActive]);
+  useEffect(() => { playbackPositionMsRef.current = playbackPositionMs; }, [playbackPositionMs]);
+
+  // Handle Play Mode Switch (Mute logic)
+  useEffect(() => {
+    if (playMode === 'music') {
+      tabRef.current?.muteTrack(0, true);
+    } else {
+      tabRef.current?.pause();
+      tabRef.current?.muteTrack(0, false);
+      // Reset hits so they can be played again
+      hitBeatsRef.current.clear();
+      missedBeatsRef.current.clear();
+    }
+  }, [playMode]);
 
   const engine = getAudioEngine();
 
@@ -166,17 +189,143 @@ export function Player({ song, onBack }: PlayerProps) {
     const tl = tabRef.current?.getTimeline(song.bpm) ?? [];
     timelineRef.current = tl;
     setTimeline(tl);
+    hitBeatsRef.current.clear();
+    missedBeatsRef.current.clear();
   }, [advanceTo, song.bpm]);
+
+  // ── Music Mode Callbacks ───────────────────────────────────────────────────
+  const handlePlayerStateChanged = useCallback((args: any) => {
+    setPlayerState(args.state);
+  }, []);
+
+  const handlePlayerPositionChanged = useCallback((args: any) => {
+    if (playMode !== 'music') return;
+    const currentMs = args.currentTime;
+    setPlaybackPositionMs(currentMs);
+
+    // 1. Check for Misses (beats that passed 200ms ago without being hit)
+    const newMisses: NoteResult[] = [];
+    for (let i = 0; i < timelineRef.current.length; i++) {
+      const beat = timelineRef.current[i];
+      if (beat.isRest || hitBeatsRef.current.has(i) || missedBeatsRef.current.has(i)) continue;
+      
+      // If we are past the beat by > 200ms
+      if (currentMs > beat.timePositionMs + 200) {
+        missedBeatsRef.current.add(i);
+        const expNote = tabRef.current?.getNoteAtBeat(i) ?? '?';
+        newMisses.push({
+          beatIndex: i,
+          expectedNote: expNote,
+          detectedNote: '-',
+          correct: false,
+          timingMs: 999, // indicates Miss
+        });
+      } else {
+        // Since timeline is sorted, we can stop searching if we reach future beats
+        break;
+      }
+    }
+
+    if (newMisses.length > 0) {
+      setSessionStats(prev => ({
+        ...prev,
+        notesAttempted: prev.notesAttempted + newMisses.length,
+        noteResults: [...prev.noteResults, ...newMisses],
+      }));
+    }
+
+    // 2. Update visual cursor to the beat we are currently on/passing
+    let newBeatIdx = beatIndexRef.current;
+    for (let i = beatIndexRef.current; i < timelineRef.current.length; i++) {
+      if (timelineRef.current[i].timePositionMs <= currentMs) {
+        newBeatIdx = i;
+      } else {
+        break;
+      }
+    }
+    
+    if (newBeatIdx !== beatIndexRef.current) {
+      setCurrentBeatIndex(newBeatIdx);
+      beatIndexRef.current = newBeatIdx;
+      setExpectedNote(tabRef.current?.getNoteAtBeat(newBeatIdx) ?? null);
+      tabRef.current?.goToBeat(newBeatIdx);
+    }
+  }, [playMode]);
 
   /** Core matching handler — called on noteOnset events only. */
   const handleNoteOnset = useCallback((e: CustomEvent<DetectedNote>) => {
     if (!isListeningRef.current) return;
-    if (performance.now() < refractoryUntilRef.current) return;
+    if (playMode === 'practice' && performance.now() < refractoryUntilRef.current) return;
 
     const detected = e.detail;
-    const beatIndex = beatIndexRef.current;
     const tolerance = toleranceRef.current;
     const onsetTime = performance.now();
+
+    // ── MUSIC MODE MATCHING ──
+    if (playMode === 'music') {
+      const currentMs = playbackPositionMsRef.current;
+      let nearestBeat: BeatStringNote | null = null;
+      let minDiff = Infinity;
+      
+      // Find nearest active, un-hit beat within a 200ms window
+      for (const beat of timelineRef.current) {
+        if (beat.isRest || hitBeatsRef.current.has(beat.beatIndex) || missedBeatsRef.current.has(beat.beatIndex)) continue;
+        const diff = Math.abs(currentMs - beat.timePositionMs);
+        if (diff < minDiff && diff <= 200) {
+          minDiff = diff;
+          nearestBeat = beat;
+        }
+      }
+
+      if (!nearestBeat) return; // No beat in window, ignore onset
+
+      const expNoteName = tabRef.current?.getNoteAtBeat(nearestBeat.beatIndex) ?? null;
+      if (!expNoteName) return;
+
+      const result = matchNote(detected, { noteName: expNoteName, beatIndex: nearestBeat.beatIndex }, tolerance);
+      
+      if (result.isMatch) {
+        hitBeatsRef.current.add(nearestBeat.beatIndex);
+        const timingDiffMs = Math.round(currentMs - nearestBeat.timePositionMs);
+        
+        // Trigger arcade flash
+        const beatStrings = nearestBeat.notes.map((n) => n.stringNumber);
+        setLastHit({
+          id: ++hitIdRef.current,
+          correct: true,
+          timingMs: Math.abs(timingDiffMs),
+          strings: beatStrings,
+          matchResult: result,
+        });
+
+        // Record stats
+        setSessionStats(prev => {
+          const newResult: NoteResult = {
+            beatIndex: nearestBeat!.beatIndex,
+            expectedNote: expNoteName,
+            detectedNote: detected.noteName,
+            correct: true,
+            timingMs: timingDiffMs,
+          };
+          const newResults = [...prev.noteResults, newResult];
+          const correctHits = newResults.filter(r => r.correct);
+          const avgTiming = correctHits.length > 0
+            ? Math.round(correctHits.reduce((sum, r) => sum + r.timingMs, 0) / correctHits.length)
+            : 0;
+          return {
+            ...prev,
+            notesAttempted: prev.notesAttempted + 1,
+            notesCorrect: prev.notesCorrect + 1,
+            avgTimingMs: avgTiming,
+            noteResults: newResults,
+          };
+        });
+      }
+      return;
+    }
+
+    // ── PRACTICE MODE MATCHING ──
+    const beatIndex = beatIndexRef.current;
 
     const expNoteName = tabRef.current?.getNoteAtBeat(beatIndex) ?? null;
     if (!expNoteName) {
@@ -239,7 +388,7 @@ export function Player({ song, onBack }: PlayerProps) {
       refractoryUntilRef.current = performance.now() + REFRACTORY_MS;
       advanceTo(beatIndex + 1);
     }
-  }, [advanceTo]);
+  }, [advanceTo, playMode]);
 
   // ── Audio controls ─────────────────────────────────────────────────────────
   const startListening = useCallback(async () => {
@@ -284,7 +433,13 @@ export function Player({ song, onBack }: PlayerProps) {
     setSessionStats({ notesAttempted: 0, notesCorrect: 0, startTime: Date.now(), avgTimingMs: 0, noteResults: [] });
     setLastHit(null);
     hitIdRef.current = 0;
-  }, [advanceTo]);
+    hitBeatsRef.current.clear();
+    missedBeatsRef.current.clear();
+    
+    if (playMode === 'music') {
+      tabRef.current?.play(); // auto play on restart in music mode
+    }
+  }, [advanceTo, playMode]);
 
   // ── Loop A-B handlers ──────────────────────────────────────────────────────
   const handleMarkA = useCallback(() => {
@@ -353,12 +508,18 @@ export function Player({ song, onBack }: PlayerProps) {
           <h1 className={styles.songTitle}>{song.title}</h1>
           <span className={styles.songArtist}>{song.artist}</span>
         </div>
-        {/* Mode toggle — center-right of header */}
-        <ModeToggle
-          mode={viewMode}
-          arcadeReady={timeline.length > 0}
-          onChange={(m) => { setViewMode(m); saveViewMode(m); }}
-        />
+        {/* Mode toggles */}
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <PlayModeToggle
+            mode={playMode}
+            onChange={(m) => { setPlayMode(m); savePlayMode(m); }}
+          />
+          <ModeToggle
+            mode={viewMode}
+            arcadeReady={timeline.length > 0}
+            onChange={(m) => { setViewMode(m); saveViewMode(m); }}
+          />
+        </div>
         <div className={styles.bpm}>
           <span className={styles.bpmValue}>{song.bpm}</span>
           <span className={styles.bpmLabel}>BPM</span>
@@ -392,6 +553,8 @@ export function Player({ song, onBack }: PlayerProps) {
               alphaTex={song.alphaTex}
               onScoreLoaded={handleScoreLoaded}
               onError={(err) => setAudioError(err)}
+              onPlayerStateChanged={handlePlayerStateChanged}
+              onPlayerPositionChanged={handlePlayerPositionChanged}
             />
           </div>
 
@@ -413,8 +576,9 @@ export function Player({ song, onBack }: PlayerProps) {
                 timeline={timeline}
                 currentBeatIndex={currentBeatIndex}
                 bpm={song.bpm}
-                isActive={listeningState === 'running'}
+                isActive={listeningState === 'running' && (playMode === 'practice' || playerState === 1)}
                 lastHit={lastHit}
+                playbackPositionMs={playMode === 'music' ? playbackPositionMs : (timeline[currentBeatIndex]?.timePositionMs ?? 0)}
               />
             </div>
           )}
@@ -450,6 +614,39 @@ export function Player({ song, onBack }: PlayerProps) {
             expectedNote={listeningState === 'running' ? expectedNote : null}
             toleranceCents={toleranceCents}
           />
+
+          {/* Music Mode Controls */}
+          {playMode === 'music' && (
+            <div className={styles.musicControls}>
+              <button
+                className={`btn btn-lg ${playerState === 1 ? 'btn-danger' : 'btn-primary'}`}
+                style={{ width: '100%', marginBottom: '8px' }}
+                onClick={() => {
+                  if (listeningState === 'idle') startListening(); // Auto start mic
+                  tabRef.current?.playPause();
+                }}
+              >
+                {playerState === 1 ? '⏸ Pausar Música' : '▶️ Tocar Música'}
+              </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Velocidade:</span>
+                <select
+                  value={playbackSpeed}
+                  onChange={(e) => {
+                    const speed = Number(e.target.value);
+                    setPlaybackSpeed(speed);
+                    tabRef.current?.setPlaybackSpeed(speed);
+                  }}
+                  style={{ background: 'var(--bg-elevated)', color: '#fff', border: '1px solid var(--border-card)', borderRadius: '4px', padding: '4px' }}
+                >
+                  <option value={0.5}>50%</option>
+                  <option value={0.75}>75%</option>
+                  <option value={1}>100%</option>
+                  <option value={1.25}>125%</option>
+                </select>
+              </div>
+            </div>
+          )}
 
           {/* Controls + stats */}
           <PracticeControls

@@ -23,12 +23,25 @@ export interface TabViewerRef {
    * @param bpm - song BPM; must match the \tempo in the .alphatex for accurate timing.
    */
   getTimeline: (bpm: number) => BeatStringNote[];
+
+  // ── Music Mode (Playback) ────────────────────────────────────────────────
+  play: () => void;
+  pause: () => void;
+  playPause: () => void;
+  /** Speed multiplier (e.g. 1.0 = 100%, 0.5 = 50%) */
+  setPlaybackSpeed: (speed: number) => void;
+  /** Mute or unmute a specific track by index (0 is usually the main guitar) */
+  muteTrack: (trackIndex: number, mute: boolean) => void;
+  /** Get current player state (0 = paused, 1 = playing) */
+  getPlayerState: () => number;
 }
 
 interface TabViewerProps {
   alphaTex: string;
   onScoreLoaded?: (totalBeats: number) => void;
   onError?: (error: string) => void;
+  onPlayerStateChanged?: (args: any) => void;
+  onPlayerPositionChanged?: (args: any) => void;
 }
 
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -99,7 +112,7 @@ function buildBeatsArray(score: alphaTab.model.Score): alphaTab.model.Beat[] {
  * to ensure offline functionality and consistent performance.
  */
 export const TabViewer = forwardRef<TabViewerRef, TabViewerProps>(function TabViewer(
-  { alphaTex, onScoreLoaded, onError },
+  { alphaTex, onScoreLoaded, onError, onPlayerStateChanged, onPlayerPositionChanged },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -144,10 +157,11 @@ export const TabViewer = forwardRef<TabViewerRef, TabViewerProps>(function TabVi
     settings.display.resources.secondaryGlyphColor = gray;
     // ─────────────────────────────────────────────────────────────────────────
 
-    // Disable built-in player — we control playback
-    settings.player.enablePlayer = false;
+    // Enable built-in player for Music Mode
+    settings.player.enablePlayer = true;
+    settings.player.soundFont = '/alphatab/font/sonivox.sf2';
     settings.player.enableCursor = true;
-    settings.player.scrollMode = alphaTab.ScrollMode.Off;
+    settings.player.scrollMode = alphaTab.ScrollMode.Continuous;
 
     const api = new alphaTab.AlphaTabApi(containerRef.current, settings);
     apiRef.current = api;
@@ -170,6 +184,13 @@ export const TabViewer = forwardRef<TabViewerRef, TabViewerProps>(function TabVi
 
     api.scoreLoaded.on(onScoreLoadedHandler);
     api.error.on(onErrorHandler);
+    
+    if (onPlayerStateChanged) {
+      api.playerStateChanged.on(onPlayerStateChanged);
+    }
+    if (onPlayerPositionChanged) {
+      api.playerPositionChanged.on(onPlayerPositionChanged);
+    }
 
     // Load the AlphaTex score
     api.tex(alphaTex);
@@ -177,6 +198,8 @@ export const TabViewer = forwardRef<TabViewerRef, TabViewerProps>(function TabVi
     return () => {
       api.scoreLoaded.off(onScoreLoadedHandler);
       api.error.off(onErrorHandler);
+      if (onPlayerStateChanged) api.playerStateChanged.off(onPlayerStateChanged);
+      if (onPlayerPositionChanged) api.playerPositionChanged.off(onPlayerPositionChanged);
       api.destroy();
       apiRef.current = null;
     };
@@ -220,6 +243,21 @@ export const TabViewer = forwardRef<TabViewerRef, TabViewerProps>(function TabVi
     getTimeline(bpm: number): BeatStringNote[] {
       return extractBeatTimeline(beatsRef.current, bpm);
     },
+
+    play() { apiRef.current?.play(); },
+    pause() { apiRef.current?.pause(); },
+    playPause() { apiRef.current?.playPause(); },
+    setPlaybackSpeed(speed: number) {
+      if (apiRef.current) apiRef.current.playbackSpeed = speed;
+    },
+    muteTrack(trackIndex: number, mute: boolean) {
+      if (!apiRef.current || !apiRef.current.score) return;
+      const track = apiRef.current.score.tracks[trackIndex];
+      if (track) apiRef.current.changeTrackMute([track], mute);
+    },
+    getPlayerState() {
+      return apiRef.current?.playerState ?? 0;
+    }
   }));
 
   return (

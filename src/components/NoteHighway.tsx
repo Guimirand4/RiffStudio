@@ -48,6 +48,7 @@ interface NoteHighwayProps {
   bpm: number;
   isActive: boolean;
   lastHit: HitFeedback | null;
+  playbackPositionMs: number;
 }
 
 // ─── Visual constants ─────────────────────────────────────────────────────────
@@ -105,6 +106,7 @@ export function NoteHighway({
   bpm,
   isActive,
   lastHit,
+  playbackPositionMs,
 }: NoteHighwayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const flashesRef = useRef<FlashState[]>([]);
@@ -115,11 +117,13 @@ export function NoteHighway({
   const currentBeatRef = useRef(currentBeatIndex);
   const bpmRef = useRef(bpm);
   const isActiveRef = useRef(isActive);
+  const playbackPositionMsRef = useRef(playbackPositionMs);
 
   useEffect(() => { timelineRef.current = timeline; }, [timeline]);
   useEffect(() => { currentBeatRef.current = currentBeatIndex; }, [currentBeatIndex]);
   useEffect(() => { bpmRef.current = bpm; }, [bpm]);
   useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
+  useEffect(() => { playbackPositionMsRef.current = playbackPositionMs; }, [playbackPositionMs]);
 
   // ── Flash trigger ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -233,8 +237,7 @@ export function NoteHighway({
     const pxPerMs = availableWidth / lookaheadMs;
 
     // ── Note positions ────────────────────────────────────────────────────────────
-    const currentBeat = timeline[currentBeatIdx];
-    const currentTimeMs = currentBeat?.timePositionMs ?? 0;
+    const currentTimeMs = playbackPositionMsRef.current;
 
     const MIN_X = LABEL_WIDTH - NOTE_RADIUS * 3;
     const MAX_X = W + NOTE_RADIUS;
