@@ -91,6 +91,13 @@ const STRING_LANE_BG: Record<number, string> = {
   1: 'rgba(168, 85, 247, 0.04)',
 };
 
+function hexToRgba(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 interface FlashState {
   stringNumber: number;
   color: string;
@@ -265,7 +272,7 @@ export function NoteHighway({
         if (isCurrent) {
           // Outer glow ring for the expected note
           const glow = ctx.createRadialGradient(x, y, NOTE_RADIUS, x, y, NOTE_RADIUS * 2.8);
-          glow.addColorStop(0, color.replace(')', ', 0.5)').replace('rgb', 'rgba').replace('#', 'rgba(').replace('rgba(', 'rgba(') || `${color}80`);
+          glow.addColorStop(0, hexToRgba(color, 0.5));
           glow.addColorStop(1, 'transparent');
           // Simplified glow: just a larger semi-transparent circle
           ctx.fillStyle = color;

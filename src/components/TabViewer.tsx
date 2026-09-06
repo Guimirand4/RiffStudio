@@ -252,8 +252,11 @@ export const TabViewer = forwardRef<TabViewerRef, TabViewerProps>(function TabVi
     },
     muteTrack(trackIndex: number, mute: boolean) {
       if (!apiRef.current || !apiRef.current.score) return;
-      const track = apiRef.current.score.tracks[trackIndex];
-      if (track) apiRef.current.changeTrackMute([track], mute);
+      // Only mute if there are other tracks to play; otherwise it's completely silent.
+      if (apiRef.current.score.tracks.length > 1) {
+        const track = apiRef.current.score.tracks[trackIndex];
+        if (track) apiRef.current.changeTrackMute([track], mute);
+      }
     },
     getPlayerState() {
       return apiRef.current?.playerState ?? 0;
