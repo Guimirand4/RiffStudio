@@ -581,7 +581,10 @@ export function Player({ song, onBack }: PlayerProps) {
                 timeline={timeline}
                 currentBeatIndex={currentBeatIndex}
                 bpm={song.bpm}
-                isActive={listeningState === 'running' && (playMode === 'practice' || playerState === 1)}
+                isActive={
+                  (playMode === 'practice' && listeningState === 'running') ||
+                  (playMode === 'music' && playerState === 1)
+                }
                 lastHit={lastHit}
                 playbackPositionMs={playMode === 'music' ? playbackPositionMs : (timeline[currentBeatIndex]?.timePositionMs ?? 0)}
               />
