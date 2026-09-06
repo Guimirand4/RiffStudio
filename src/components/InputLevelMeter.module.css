@@ -1,0 +1,97 @@
+/* InputLevelMeter.module.css */
+
+.container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.status {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  transition: color var(--transition-base);
+}
+
+/* Meter track */
+.meterTrack {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+/* Zone backgrounds */
+.zoneGreen, .zoneYellow, .zoneRed {
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+.zoneGreen  { left: 0;    width: 70%; background: rgba(57, 255, 20, 0.12); }
+.zoneYellow { left: 70%;  width: 20%; background: rgba(245, 158, 11, 0.12); }
+.zoneRed    { left: 90%;  width: 10%; background: rgba(255, 68, 68, 0.12); }
+
+/* Level fill — uses a color that shifts green→yellow→red based on level */
+.levelFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 60ms linear;
+  background: linear-gradient(
+    90deg,
+    #39ff14 0%,
+    #39ff14 65%,
+    #f59e0b 80%,
+    #ff4444 95%
+  );
+  box-shadow: 0 0 6px rgba(57, 255, 20, 0.3);
+}
+
+/* Peak hold marker */
+.peakMarker {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--note-correct);
+  transform: translateX(-50%);
+  transition: left 150ms ease;
+  border-radius: 1px;
+  box-shadow: 0 0 4px var(--accent-glow);
+}
+
+.peakRed {
+  background: var(--note-wrong);
+  box-shadow: 0 0 4px rgba(255, 68, 68, 0.5);
+}
+
+/* Scale labels */
+.scaleLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  margin-top: -4px;
+}

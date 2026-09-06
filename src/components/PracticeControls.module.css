@@ -1,0 +1,91 @@
+/* PracticeControls.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+}
+
+.mainButton {
+  width: 100%;
+}
+
+/* Stats grid — 3 columns × 2 rows to avoid overflow in sidebar */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: var(--bg-secondary);
+}
+
+.statValue {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: color var(--transition-base);
+  white-space: nowrap;
+}
+
+.statLabel {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* statDivider no longer needed — grid handles separation */
+.statDivider { display: none; }
+
+.good { color: var(--note-correct) !important; }
+.warn { color: #f59e0b !important; }
+.poor { color: var(--note-wrong) !important; }
+
+/* Tolerance section */
+.toleranceSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toleranceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toleranceLabel {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.toleranceValue {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.toleranceHints {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}

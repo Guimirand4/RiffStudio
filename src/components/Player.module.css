@@ -1,0 +1,160 @@
+/* Player.module.css */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;          /* Fixed height — no scroll on outer page */
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-3) var(--space-6);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.songInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.songTitle {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.songArtist {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.bpm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.bpmValue {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.bpmLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Progress bar */
+.progressBar {
+  position: relative;
+  height: 4px;
+  background: var(--bg-elevated);
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px var(--accent-glow);
+  transition: width 300ms ease;
+}
+
+.progressLabel {
+  position: absolute;
+  right: var(--space-4);
+  top: 8px;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* ── Main layout: tab area + sidebar ───────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+  flex: 1;
+  overflow: hidden;       /* Contain children — each area scrolls independently */
+  min-height: 0;
+}
+
+@media (max-width: 1000px) {
+  .layout {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+}
+
+/* Tab viewer area — scrolls vertically if score is tall */
+.tabArea {
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: var(--radius-lg);
+  min-height: 0;
+}
+
+/* Sidebar — independent scroll so all controls are always reachable */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding-right: 4px; /* Room for scrollbar */
+  /* Thin custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-card) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-card);
+  border-radius: 2px;
+}
+
+/* Error box */
+.errorBox {
+  background: var(--note-wrong-bg);
+  border: 1px solid rgba(255, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  color: var(--note-wrong);
+  font-size: var(--text-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.errorBox p {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: var(--text-xs);
+}

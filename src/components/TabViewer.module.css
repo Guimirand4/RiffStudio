@@ -1,0 +1,103 @@
+/* TabViewer.module.css */
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  /* Outer card — dark to match the app, with rounded corners */
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* The alphaTab render area — white paper background */
+.container {
+  width: 100%;
+  min-height: 320px;
+  transition: opacity var(--transition-slow);
+  background: #ffffff;          /* White background — essential for dark-ink notation */
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  overflow-x: auto;
+}
+
+/* ─── AlphaTab internal element overrides ─────────────────────────────── */
+
+/* Root wrapper alphaTab injects */
+.container :global(.at-main) {
+  background: #ffffff !important;
+}
+
+/* Every SVG alphaTab renders — force white background */
+.container :global(svg) {
+  background: #ffffff;
+}
+
+/* Score title / artist area (above the staff) */
+.container :global(.at-score-info) {
+  background: #f8f8f8 !important;
+  border-bottom: 1px solid #e0e0e8;
+  padding: 8px 16px !important;
+}
+
+/* Cursor — neon green line on white background stays very visible */
+.container :global(.at-cursor-bar) {
+  background: rgba(57, 255, 20, 0.12) !important;
+}
+.container :global(.at-cursor-beat) {
+  background: #22c55e !important;   /* solid green, readable on white */
+  width: 3px !important;
+  border-radius: 1px;
+}
+
+/* Selection */
+.container :global(.at-selection div) {
+  background: rgba(57, 255, 20, 0.15) !important;
+}
+
+/* "rendered by alphaTab" footer — keep it subtle */
+.container :global(.at-surface) {
+  background: #ffffff !important;
+}
+
+/* ─── Loading overlay ─────────────────────────────────────────────────── */
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  z-index: 10;
+}
+
+.loadingText {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ─── Error state ─────────────────────────────────────────────────────── */
+.errorState {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--note-wrong);
+  font-size: var(--text-sm);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+}
+
+.errorDetail {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  max-width: 80%;
+  text-align: center;
+  font-family: var(--font-mono);
+}

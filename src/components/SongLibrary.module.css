@@ -1,0 +1,262 @@
+/* SongLibrary.module.css */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-8);
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Hero */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-8);
+  background: linear-gradient(135deg, #111119 0%, #0d0d15 100%);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  position: relative;
+  overflow: hidden;
+  animation: fade-in-up 0.5s ease both;
+}
+
+/* Subtle grid background */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(57, 255, 20, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 20, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  z-index: 1;
+}
+
+.appName {
+  font-size: var(--text-3xl);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.appTagline {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.heroStats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  z-index: 1;
+}
+
+.heroStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.heroStatValue {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.heroStatLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.heroStatDivider {
+  width: 1px;
+  height: 40px;
+  background: var(--border-subtle);
+}
+
+/* Section */
+.subtitle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  animation: fade-in-up 0.5s 0.1s ease both;
+}
+
+.sectionTitle {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sectionDesc {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+/* Song grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+/* Song card */
+.card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-base);
+  animation: fade-in-up 0.4s ease both;
+  cursor: default;
+}
+
+.card:hover {
+  border-color: var(--card-color, var(--border-accent));
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 1px var(--card-color, var(--accent)),
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    0 0 40px color-mix(in srgb, var(--card-color, var(--accent)) 15%, transparent);
+}
+
+/* Top accent bar */
+.cardAccent {
+  height: 3px;
+  width: 100%;
+  opacity: 0.8;
+}
+
+.cardBody {
+  padding: var(--space-6);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bpmBadge {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.cardTitle {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.cardArtist {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.cardDesc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+}
+
+/* Stars */
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.starFilled {
+  color: #fbbf24;
+  font-size: 14px;
+}
+
+.starEmpty {
+  color: var(--bg-elevated);
+  font-size: 14px;
+}
+
+.difficultyLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.duration {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* Practice button */
+.practiceBtn {
+  margin: 0 var(--space-6) var(--space-6);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: all var(--transition-base);
+}
+
+.practiceBtn:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+/* Tip */
+.tip {
+  padding: var(--space-4) var(--space-6);
+  background: rgba(57, 255, 20, 0.04);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  animation: fade-in-up 0.4s 0.3s ease both;
+}
+
+.tip strong {
+  color: var(--accent);
+}

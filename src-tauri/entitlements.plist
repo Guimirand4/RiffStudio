@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <!-- Microphone access — required for real-time pitch detection via getUserMedia() -->
+    <key>com.apple.security.device.audio-input</key>
+    <true/>
+
+    <!-- Required for WebView to function in sandboxed mode -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+
+    <!-- Network access — for Google Fonts and alphaTab CDN assets -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <!-- Allow reading files the user opens -->
+    <key>com.apple.security.files.user-selected.read-only</key>
+    <true/>
+  </dict>
+</plist>

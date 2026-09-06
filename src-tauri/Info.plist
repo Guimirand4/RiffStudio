@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <!--
+      NSMicrophoneUsageDescription é OBRIGATÓRIO no macOS para que o sistema
+      mostre o diálogo de permissão quando o app chama getUserMedia({audio}).
+      Sem esta chave, navigator.mediaDevices fica undefined no WKWebView.
+    -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>RiffStudio precisa de acesso ao microfone para detectar em tempo real as notas que você toca na guitarra.</string>
+  </dict>
+</plist>
