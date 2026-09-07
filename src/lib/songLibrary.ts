@@ -6,6 +6,12 @@
  * To add a song: create a const with AlphaTex, add an entry to SONGS[].
  */
 
+import { fullSmokeOnTheWater } from './tabs/smokeOnTheWater';
+import { fullSevenNationArmy } from './tabs/sevenNationArmy';
+import { fullComeAsYouAre } from './tabs/comeAsYouAre';
+import { fullParanoid } from './tabs/paranoid';
+import { fullBackInBlack } from './tabs/backInBlack';
+
 export type Difficulty = 1 | 2 | 3 | 4 | 5;
 export type SongCategory = 'riff' | 'full-song';
 
@@ -231,7 +237,7 @@ export const SONGS: Song[] = [
     bpm: 112,
     durationLabel: '~5 min',
     description: 'Música completa com intro, verso e refrão. Todas as seções incluindo o solo simplificado.',
-    alphaTex: smokeOnTheWater,
+    alphaTex: fullSmokeOnTheWater,
     color: '#7c3aed',
     category: 'full-song',
   },
@@ -244,7 +250,7 @@ export const SONGS: Song[] = [
     bpm: 124,
     durationLabel: '~3 min',
     description: 'Música completa com todos os riffs e a seção do verso. Timing e groove do começo ao fim.',
-    alphaTex: sevenNationArmy,
+    alphaTex: fullSevenNationArmy,
     color: '#dc2626',
     category: 'full-song',
   },
@@ -257,7 +263,7 @@ export const SONGS: Song[] = [
     bpm: 120,
     durationLabel: '~3 min 40s',
     description: 'Música completa com intro, verso, pré-refrão e refrão. O arpejo que definiu uma geração.',
-    alphaTex: comeAsYouAre,
+    alphaTex: fullComeAsYouAre,
     color: '#0891b2',
     category: 'full-song',
   },
@@ -270,7 +276,7 @@ export const SONGS: Song[] = [
     bpm: 164,
     durationLabel: '~2 min 50s',
     description: 'A música completa com verso, refrão e solo. Uma das mais rápidas da classe iniciante-intermediário.',
-    alphaTex: paranoid,
+    alphaTex: fullParanoid,
     color: '#9333ea',
     category: 'full-song',
   },
@@ -283,7 +289,7 @@ export const SONGS: Song[] = [
     bpm: 96,
     durationLabel: '~4 min 15s',
     description: 'Desde o riff de abertura icônico até o refrão poderoso. Power chords e ritmo sincopado ao longo de toda a música.',
-    alphaTex: backInBlack,
+    alphaTex: fullBackInBlack,
     color: '#d97706',
     category: 'full-song',
   },
