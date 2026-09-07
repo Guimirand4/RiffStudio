@@ -6,12 +6,12 @@
  * To add a song: create a const with AlphaTex, add an entry to SONGS[].
  */
 
-import { fullSmokeOnTheWater } from './tabs/smokeOnTheWater';
-import { fullSevenNationArmy } from './tabs/sevenNationArmy';
-import { fullComeAsYouAre } from './tabs/comeAsYouAre';
-import { fullParanoid } from './tabs/paranoid';
-import { fullBackInBlack } from './tabs/backInBlack';
-import { californicationRiff, fullCalifornication } from './tabs/californication';
+import { fullSmokeOnTheWater, fullSmokeOnTheWaterSimplified } from './tabs/smokeOnTheWater';
+import { fullSevenNationArmy, fullSevenNationArmySimplified } from './tabs/sevenNationArmy';
+import { fullComeAsYouAre, fullComeAsYouAreSimplified } from './tabs/comeAsYouAre';
+import { fullParanoid, fullParanoidSimplified } from './tabs/paranoid';
+import { fullBackInBlack, fullBackInBlackSimplified } from './tabs/backInBlack';
+import { californicationRiff, californicationRiffSimplified, fullCalifornication, fullCalifornicationSimplified } from './tabs/californication';
 
 export type Difficulty = 1 | 2 | 3 | 4 | 5;
 export type SongCategory = 'riff' | 'full-song';
@@ -103,6 +103,67 @@ const laGrange = `\\title "La Grange (Intro)"
 .
 :8 (0.5 2.4 2.3) r.8 (0.5 2.4 2.3) r.8 (0.5 2.4 2.3) (0.5 2.4 2.3) :4 (3.5 5.4 5.3) | :8 (0.5 2.4 2.3) r.8 (0.5 2.4 2.3) r.8 (0.5 2.4 2.3) (0.5 2.4 2.3) :4 (3.5 5.4 5.3) |`;
 
+const smokeOnTheWaterSimplified = `\\title "Smoke on the Water - Simplificada"
+\\artist "Deep Purple"
+\\tempo 112
+\\instrument 25
+.
+:4 5.4 7.4 8.4 | 5.4 7.4 (8.4 9.4){d} 7.4 | 5.4 7.4 8.4 7.4 | r.1 |
+:4 5.4 7.4 8.4 | 5.4 7.4 (8.4 9.4){d} 7.4 | 5.4 7.4 8.4 (7.4 5.4) | r.1 |`;
+
+const sevenNationArmySimplified = `\\title "Seven Nation Army - Simplificada"
+\\artist "The White Stripes"
+\\tempo 124
+\\instrument 25
+.
+:4 7.5 7.5 :8 10.5 7.5 :4 5.5 | :4 3.5 | :2 2.5 r.2 |
+:4 7.5 7.5 :8 10.5 7.5 :4 5.5 | :4 3.5 | :2 2.5 r.2 |`;
+
+const comeAsYouAreSimplified = `\\title "Come As You Are - Simplificada"
+\\artist "Nirvana"
+\\tempo 120
+\\instrument 25
+.
+:4 2.5 2.5 :8 4.5 5.5 :4 4.5 | :4 2.5 0.5 :2 r.2 |
+:4 2.5 2.5 :8 4.5 5.5 :4 4.5 | :4 2.5 0.5 :2 r.2 |
+:4 4.5 4.5 :8 2.5 4.5 :4 2.5 | :4 0.5 2.5 :2 r.2 |
+:4 4.5 4.5 :8 2.5 4.5 :4 2.5 | :4 0.5 r.2. |`;
+
+const paranoidSimplified = `\\title "Paranoid - Simplificada"
+\\artist "Black Sabbath"
+\\tempo 164
+\\instrument 25
+.
+:8 0.6 2.6 4.6 :4 4.6 :8 3.6 | :8 3.6 4.6 3.6 :4 0.6 r.4 |
+:8 0.6 2.6 4.6 :4 4.6 :8 3.6 | :8 3.6 4.6 3.6 :2 0.6 |
+:8 0.6 2.6 4.6 :4 4.6 :8 3.6 | :8 3.6 4.6 3.6 :4 0.6 r.4 |
+:8 3.5 3.5 3.5 3.5 3.5 3.5 3.5 3.5 | :2 0.6 r.2 |`;
+
+const backInBlackSimplified = `\\title "Back in Black - Simplificada"
+\\artist "AC/DC"
+\\tempo 96
+\\instrument 25
+.
+:8 0.6 2.6 4.6 :4 4.6 :8 3.6 | :8 3.6 4.6 3.6 :4 0.6 r.4 |
+:8 0.6 2.6 4.6 :4 4.6 :8 3.6 | :8 3.6 4.6 3.6 :2 0.6 |
+:8 0.6 2.6 4.6 :4 4.6 :8 3.6 | :8 3.6 4.6 3.6 :4 0.6 r.4 |
+:8 3.5 3.5 3.5 3.5 3.5 3.5 3.5 3.5 | :2 0.6 r.2 |`;
+
+const ironManSimplified = `\\title "Iron Man - Simplificada"
+\\artist "Black Sabbath"
+\\tempo 73
+\\instrument 25
+.
+:2 0.6 :4 r.4 | :4 0.6 2.6 3.6 :8 3.6 3.6 :4 2.6 | :2 0.5 :4 r.4 | :4 0.5 2.5 3.5 :8 3.5 3.5 :4 2.5 |
+:2 0.6 :4 r.4 | :4 0.6 2.6 3.6 :8 3.6 3.6 :4 2.6 | :4 5.6 6.6 7.6 5.6 | :2 4.6 r.2 |`;
+
+const laGrangeSimplified = `\\title "La Grange (Intro) - Simplificada"
+\\artist "ZZ Top"
+\\tempo 160
+\\instrument 25
+.
+:8 0.5 r.8 0.5 r.8 0.5 0.5 3.5 3.5 | :8 0.5 r.8 0.5 r.8 0.5 0.5 3.5 3.5 | :8 0.5 r.8 0.5 r.8 0.5 0.5 3.5 3.5 |`;
+
 // Paranoid — Black Sabbath
 // Riff rápido em E, excelente para treinar velocidade e alternating picking
 const paranoid = `\\title "Paranoid"
@@ -133,6 +194,19 @@ export const SONGS: Song[] = [
     category: 'riff',
   },
   {
+    id: 'smoke-on-the-water-simplified',
+    title: 'Smoke on the Water (Simplificada)',
+    artist: 'Deep Purple',
+    difficulty: 1,
+    genre: 'Classic Rock',
+    bpm: 112,
+    durationLabel: '~1 min',
+    description: 'Versão monofônica simplificada, perfeita para iniciantes focarem apenas na corda certa.',
+    alphaTex: smokeOnTheWaterSimplified,
+    color: '#7c3aed',
+    category: 'riff',
+  },
+  {
     id: 'seven-nation-army',
     title: 'Seven Nation Army',
     artist: 'The White Stripes',
@@ -142,6 +216,19 @@ export const SONGS: Song[] = [
     durationLabel: '~1 min',
     description: 'Linha de baixo icônica tocada na guitarra. Ótimo para praticar timing e notas longas.',
     alphaTex: sevenNationArmy,
+    color: '#dc2626',
+    category: 'riff',
+  },
+  {
+    id: 'seven-nation-army-simplified',
+    title: 'Seven Nation Army (Simplificada)',
+    artist: 'The White Stripes',
+    difficulty: 1,
+    genre: 'Alternative Rock',
+    bpm: 124,
+    durationLabel: '~1 min',
+    description: 'Versão tocada apenas com notas únicas para facilitar a troca de casas na corda A.',
+    alphaTex: sevenNationArmySimplified,
     color: '#dc2626',
     category: 'riff',
   },
@@ -161,6 +248,19 @@ export const SONGS: Song[] = [
     category: 'riff',
   },
   {
+    id: 'come-as-you-are-simplified',
+    title: 'Come As You Are (Simplificada)',
+    artist: 'Nirvana',
+    difficulty: 2,
+    genre: 'Grunge',
+    bpm: 120,
+    durationLabel: '~2 min',
+    description: 'Apenas notas únicas baseadas na tônica para treinar o ritmo base.',
+    alphaTex: comeAsYouAreSimplified,
+    color: '#0891b2',
+    category: 'riff',
+  },
+  {
     id: 'iron-man',
     title: 'Iron Man',
     artist: 'Black Sabbath',
@@ -170,6 +270,19 @@ export const SONGS: Song[] = [
     durationLabel: '~2 min',
     description: 'Riff clássico do heavy metal. Simples e pesado. Ensina a fazer slides.',
     alphaTex: ironMan,
+    color: '#0284c7',
+    category: 'riff',
+  },
+  {
+    id: 'iron-man-simplified',
+    title: 'Iron Man (Simplificada)',
+    artist: 'Black Sabbath',
+    difficulty: 2,
+    genre: 'Heavy Metal',
+    bpm: 73,
+    durationLabel: '~2 min',
+    description: 'O riff clássico traduzido para notas simples. Ótimo para iniciantes sem pestana.',
+    alphaTex: ironManSimplified,
     color: '#0284c7',
     category: 'riff',
   },
@@ -196,7 +309,20 @@ export const SONGS: Song[] = [
     durationLabel: '~1 min',
     description: 'Sequência de power chords com ritmo sincopado. Clássico do rock que treina ataque e dinâmica.',
     alphaTex: backInBlack,
-    color: '#d97706',
+    color: '#334155',
+    category: 'riff',
+  },
+  {
+    id: 'back-in-black-simplified',
+    title: 'Back in Black (Simplificada)',
+    artist: 'AC/DC',
+    difficulty: 3,
+    genre: 'Hard Rock',
+    bpm: 96,
+    durationLabel: '~1 min',
+    description: 'A base tocada em notas únicas. Perfeita para praticar licks mantendo a fundação.',
+    alphaTex: backInBlackSimplified,
+    color: '#334155',
     category: 'riff',
   },
   {
@@ -209,6 +335,19 @@ export const SONGS: Song[] = [
     durationLabel: '~1 min',
     description: 'Boogie blues com nota pedal em A. Excelente para treinar groove, velocidade e nota pedal.',
     alphaTex: laGrange,
+    color: '#059669',
+    category: 'riff',
+  },
+  {
+    id: 'la-grange-simplified',
+    title: 'La Grange (Intro) - Simplificada',
+    artist: 'ZZ Top',
+    difficulty: 2,
+    genre: 'Blues Rock',
+    bpm: 160,
+    durationLabel: '~1 min',
+    description: 'Boogie blues tocado com apenas uma nota por vez, ideal para o motor entender cada acerto.',
+    alphaTex: laGrangeSimplified,
     color: '#059669',
     category: 'riff',
   },
@@ -228,6 +367,19 @@ export const SONGS: Song[] = [
     category: 'riff',
   },
   {
+    id: 'paranoid-simplified',
+    title: 'Paranoid (Simplificada)',
+    artist: 'Black Sabbath',
+    difficulty: 2,
+    genre: 'Heavy Metal',
+    bpm: 164,
+    durationLabel: '~2 min',
+    description: 'A versão tocada apenas com a nota E solta e pestanas, excelente para velocidade sem a complicação de dedilhar.',
+    alphaTex: paranoidSimplified,
+    color: '#9333ea',
+    category: 'riff',
+  },
+  {
     id: 'californication-intro',
     title: 'Californication (Intro)',
     artist: 'Red Hot Chili Peppers',
@@ -237,6 +389,19 @@ export const SONGS: Song[] = [
     durationLabel: '~12s',
     description: 'O famoso dedilhado inicial alternando entre Am e Fmaj7.',
     alphaTex: californicationRiff,
+    color: '#0ea5e9',
+    category: 'riff',
+  },
+  {
+    id: 'californication-intro-simplified',
+    title: 'Californication (Intro) - Simpl.',
+    artist: 'Red Hot Chili Peppers',
+    difficulty: 2,
+    genre: 'Alternative Rock',
+    bpm: 96,
+    durationLabel: '~12s',
+    description: 'O famoso dedilhado tocado numa versão monofônica simplificada para facilitar a palhetada.',
+    alphaTex: californicationRiffSimplified,
     color: '#0ea5e9',
     category: 'riff',
   },
@@ -250,8 +415,21 @@ export const SONGS: Song[] = [
     genre: 'Classic Rock',
     bpm: 112,
     durationLabel: '~5 min',
-    description: 'Música completa com intro, verso e refrão. Todas as seções incluindo o solo simplificado.',
+    description: 'Versão inteira da música, do riff icônico até o final. Uma resistência para iniciantes.',
     alphaTex: fullSmokeOnTheWater,
+    color: '#7c3aed',
+    category: 'full-song',
+  },
+  {
+    id: 'full-smoke-on-the-water-simplified',
+    title: 'Smoke on the Water (Completa, Simpl.)',
+    artist: 'Deep Purple',
+    difficulty: 2,
+    genre: 'Classic Rock',
+    bpm: 112,
+    durationLabel: '~5 min',
+    description: 'A música completa tocada apenas de forma monofônica, ideal para resistência inicial.',
+    alphaTex: fullSmokeOnTheWaterSimplified,
     color: '#7c3aed',
     category: 'full-song',
   },
@@ -263,8 +441,21 @@ export const SONGS: Song[] = [
     genre: 'Alternative Rock',
     bpm: 124,
     durationLabel: '~3 min',
-    description: 'Música completa com todos os riffs e a seção do verso. Timing e groove do começo ao fim.',
+    description: 'O hino dos estádios, versão completa passando pelo riff, versos rápidos e o solo.',
     alphaTex: fullSevenNationArmy,
+    color: '#dc2626',
+    category: 'full-song',
+  },
+  {
+    id: 'full-seven-nation-army-simplified',
+    title: 'Seven Nation Army (Completa, Simpl.)',
+    artist: 'The White Stripes',
+    difficulty: 2,
+    genre: 'Alternative Rock',
+    bpm: 124,
+    durationLabel: '~4 min',
+    description: 'Versão focada apenas no riff e notas principais, para treinar memória muscular sem chords pesados.',
+    alphaTex: fullSevenNationArmySimplified,
     color: '#dc2626',
     category: 'full-song',
   },
@@ -276,8 +467,21 @@ export const SONGS: Song[] = [
     genre: 'Grunge',
     bpm: 120,
     durationLabel: '~3 min 40s',
-    description: 'Música completa com intro, verso, pré-refrão e refrão. O arpejo que definiu uma geração.',
+    description: 'Música inteira, desde o dedilhado introspectivo até o refrão rasgado e o solo estranho e lindo.',
     alphaTex: fullComeAsYouAre,
+    color: '#0891b2',
+    category: 'full-song',
+  },
+  {
+    id: 'full-come-as-you-are-simplified',
+    title: 'Come As You Are (Completa, Simpl.)',
+    artist: 'Nirvana',
+    difficulty: 3,
+    genre: 'Grunge',
+    bpm: 120,
+    durationLabel: '~3 min',
+    description: 'O clássico do grunge apenas na sua fundação, tirando acordes pesados para que iniciantes possam focar.',
+    alphaTex: fullComeAsYouAreSimplified,
     color: '#0891b2',
     category: 'full-song',
   },
@@ -289,8 +493,21 @@ export const SONGS: Song[] = [
     genre: 'Heavy Metal',
     bpm: 164,
     durationLabel: '~2 min 50s',
-    description: 'A música completa com verso, refrão e solo. Uma das mais rápidas da classe iniciante-intermediário.',
+    description: 'Faixa inteira da obra prima de Tony Iommi. Riffs viscerais, mudança de ritmo e a verdadeira fundação do Heavy Metal.',
     alphaTex: fullParanoid,
+    color: '#9333ea',
+    category: 'full-song',
+  },
+  {
+    id: 'full-paranoid-simplified',
+    title: 'Paranoid (Completa, Simplificada)',
+    artist: 'Black Sabbath',
+    difficulty: 3,
+    genre: 'Heavy Metal',
+    bpm: 164,
+    durationLabel: '~3 min',
+    description: 'A música completa sem power chords. Um teste definitivo de velocidade pura na palhetada alternada.',
+    alphaTex: fullParanoidSimplified,
     color: '#9333ea',
     category: 'full-song',
   },
@@ -302,9 +519,22 @@ export const SONGS: Song[] = [
     genre: 'Hard Rock',
     bpm: 96,
     durationLabel: '~4 min 15s',
-    description: 'Desde o riff de abertura icônico até o refrão poderoso. Power chords e ritmo sincopado ao longo de toda a música.',
+    description: 'O manual de como tocar Hard Rock e soar pesado, arrastado e dançante ao mesmo tempo. Riff monstruoso.',
     alphaTex: fullBackInBlack,
-    color: '#d97706',
+    color: '#334155',
+    category: 'full-song',
+  },
+  {
+    id: 'full-back-in-black-simplified',
+    title: 'Back in Black (Completa, Simplificada)',
+    artist: 'AC/DC',
+    difficulty: 4,
+    genre: 'Hard Rock',
+    bpm: 96,
+    durationLabel: '~4 min',
+    description: 'Notas individuais ditando a fundação rítmica. Ensina a preencher espaços e palhetar licks.',
+    alphaTex: fullBackInBlackSimplified,
+    color: '#334155',
     category: 'full-song',
   },
   {
@@ -315,8 +545,21 @@ export const SONGS: Song[] = [
     genre: 'Alternative Rock',
     bpm: 96,
     durationLabel: '~5 min 30s',
-    description: 'A música completa incluindo a introdução clássica, versos, pré-refrão e refrão.',
+    description: 'O dedilhado magistral, os acordes abertos, os licks funkys do Flea transcritos e o solo belíssimo e simples de Frusciante.',
     alphaTex: fullCalifornication,
+    color: '#0ea5e9',
+    category: 'full-song',
+  },
+  {
+    id: 'full-californication-simplified',
+    title: 'Californication (Completa, Simpl.)',
+    artist: 'Red Hot Chili Peppers',
+    difficulty: 3,
+    genre: 'Alternative Rock',
+    bpm: 96,
+    durationLabel: '~5 min',
+    description: 'Toda a música arranjada de forma monofônica, ótima introdução ao universo dos Chilli Peppers.',
+    alphaTex: fullCalifornicationSimplified,
     color: '#0ea5e9',
     category: 'full-song',
   },
