@@ -53,6 +53,7 @@ export interface BeatNote {
   fret: number;
   noteName: string;   // e.g. "E2", "A4"
   midiNumber: number;
+  finger?: number;    // 0 = open, 1 = index, 2 = middle, 3 = ring, 4 = pinky
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -94,6 +95,7 @@ export function extractBeatTimeline(
 ): BeatStringNote[] {
   // msPerTick: how many milliseconds one alphaTab tick represents at this BPM.
   const msPerTick = 60_000 / (bpm * TICKS_PER_QUARTER);
+  let currentPosition = 1;
 
   return beats.map((beat, beatIndex) => {
     const timePositionMs = beat.absolutePlaybackStart * msPerTick;
@@ -107,11 +109,24 @@ export function extractBeatTimeline(
           .map((n) => {
             const openMidi = OPEN_STRING_MIDI[n.string];
             const midiNumber = openMidi + n.fret;
+
+            // --- Fingering Heuristic ---
+            let finger = 0; // 0 = open string
+            if (n.fret > 0) {
+              if (n.fret >= currentPosition && n.fret <= currentPosition + 3) {
+                finger = n.fret - currentPosition + 1;
+              } else {
+                currentPosition = n.fret;
+                finger = 1; // Index leads the new position
+              }
+            }
+
             return {
               stringNumber: n.string,
               fret: n.fret,
               noteName: midiToName(midiNumber),
               midiNumber,
+              finger,
             };
           })
           // Sort by MIDI ascending so the "match note" logic (lowest = expected) is consistent

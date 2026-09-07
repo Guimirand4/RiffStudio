@@ -29,6 +29,13 @@ interface NoteHighwayProps {
 }
 
 const NUM_STRINGS = 6;
+const FINGER_COLORS: Record<number, string> = {
+  0: '#39ff14', // Open string (Neon Green, standard in Yousician)
+  1: '#38bdf8', // Index - Sky Blue
+  2: '#a855f7', // Middle - Purple
+  3: '#f97316', // Ring - Orange
+  4: '#f43f5e', // Pinky - Rose/Red
+};
 const LABEL_WIDTH = 48;
 const HIT_LINE_OFFSET = 70;
 const HIT_LINE_X = LABEL_WIDTH + HIT_LINE_OFFSET;
@@ -244,7 +251,7 @@ export function NoteHighway({
       
       beat.notes.forEach((note) => {
         const y = laneY(note.stringNumber);
-        const color = STRING_COLOR[note.stringNumber];
+        const color = FINGER_COLORS[note.finger ?? 0] || '#fff';
         const alpha = isPast ? 0.2 : isCurrent ? 1.0 : 0.85;
 
         ctx.save();
