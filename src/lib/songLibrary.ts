@@ -38,26 +38,27 @@ const smokeOnTheWater = `\\title "Smoke on the Water"
 \\tempo 112
 \\instrument 25
 .
-:4 5.4 7.4 8.4 | 5.4 7.4 (8.4 9.4){d} 7.4 | 5.4 7.4 8.4 7.4 | r.1 |
-:4 5.4 7.4 8.4 | 5.4 7.4 (8.4 9.4){d} 7.4 | 5.4 7.4 8.4 (7.4 5.4) | r.1 |`;
+:4 (0.4 0.3) (3.4 3.3) (5.4 5.3) | (0.4 0.3) (3.4 3.3) :8 (6.4 6.3) (5.4 5.3) :4 (5.4 5.3) | :4 (0.4 0.3) (3.4 3.3) (5.4 5.3) | (3.4 3.3) (0.4 0.3) r.2 |
+:4 (0.4 0.3) (3.4 3.3) (5.4 5.3) | (0.4 0.3) (3.4 3.3) :8 (6.4 6.3) (5.4 5.3) :4 (5.4 5.3) | :4 (0.4 0.3) (3.4 3.3) (5.4 5.3) | (3.4 3.3) (0.4 0.3) r.2 |`;
 
 const sevenNationArmy = `\\title "Seven Nation Army"
 \\artist "The White Stripes"
 \\tempo 124
 \\instrument 25
 .
-:4 7.5 7.5 :8 10.5 7.5 :4 5.5 | :4 3.5 | :2 2.5 r.2 |
-:4 7.5 7.5 :8 10.5 7.5 :4 5.5 | :4 3.5 | :2 2.5 r.2 |`;
+:4 (7.5 9.4 9.3) (7.5 9.4 9.3) :8 (10.5 12.4 12.3) (7.5 9.4 9.3) :4 (5.5 7.4 7.3) | :4 (3.5 5.4 5.3) | :2 (2.5 4.4 4.3) r.2 |
+:4 (7.5 9.4 9.3) (7.5 9.4 9.3) :8 (10.5 12.4 12.3) (7.5 9.4 9.3) :4 (5.5 7.4 7.3) | :4 (3.5 5.4 5.3) (5.5 7.4 7.3) (3.5 5.4 5.3) (2.5 4.4 4.3) |`;
 
 const comeAsYouAre = `\\title "Come As You Are"
 \\artist "Nirvana"
 \\tempo 120
+\\tuning D G C F A D
 \\instrument 25
 .
-:4 2.5 2.5 :8 4.5 5.5 :4 4.5 | :4 2.5 0.5 :2 r.2 |
-:4 2.5 2.5 :8 4.5 5.5 :4 4.5 | :4 2.5 0.5 :2 r.2 |
-:4 4.5 4.5 :8 2.5 4.5 :4 2.5 | :4 0.5 2.5 :2 r.2 |
-:4 4.5 4.5 :8 2.5 4.5 :4 2.5 | :4 0.5 r.2. |`;
+:8 0.6 0.6 1.6 2.6 0.5 2.6 0.5 2.6 | :8 2.6 1.6 0.6 0.6 2.5 0.6 r.4 |
+:8 0.6 0.6 1.6 2.6 0.5 2.6 0.5 2.6 | :8 2.6 1.6 0.6 0.6 2.5 0.6 r.4 |
+:8 0.6 0.6 1.6 2.6 0.5 2.6 0.5 2.6 | :8 2.6 1.6 0.6 0.6 2.5 0.6 r.4 |
+:8 0.6 0.6 1.6 2.6 0.5 2.6 0.5 2.6 | :8 2.6 1.6 0.6 0.6 2.5 0.6 r.4 |`;
 
 // ─── Novas músicas ────────────────────────────────────────────────────────────
 
@@ -65,11 +66,11 @@ const comeAsYouAre = `\\title "Come As You Are"
 // Riff principal: power chords descendentes em E/D/A, muito reconhecível
 const ironMan = `\\title "Iron Man"
 \\artist "Black Sabbath"
-\\tempo 73
+\\tempo 100
 \\instrument 25
 .
-:2 0.6 :4 r.4 | :4 0.6 2.6 3.6 :8 3.6 3.6 :4 2.6 | :2 0.5 :4 r.4 | :4 0.5 2.5 3.5 :8 3.5 3.5 :4 2.5 |
-:2 0.6 :4 r.4 | :4 0.6 2.6 3.6 :8 3.6 3.6 :4 2.6 | :4 5.6 6.6 7.6 5.6 | :2 4.6 r.2 |`;
+:4 (7.5 9.4) :8 (10.5 12.4) :4 (10.5 12.4) :8 (12.5 14.4) :4 (12.5 14.4) | :16 15.5 14.5 15.5 14.5 15.5 :8 (10.5 12.4) :4 (10.5 12.4) :8 (12.5 14.4) :4 (12.5 14.4) |
+:4 (7.5 9.4) :8 (10.5 12.4) :4 (10.5 12.4) :8 (12.5 14.4) :4 (12.5 14.4) | :16 15.5 14.5 15.5 14.5 15.5 :8 (10.5 12.4) :4 (10.5 12.4) :8 (12.5 14.4) :4 (12.5 14.4) |`;
 
 // Enter Sandman intro — Metallica
 // Riff de introdução: arpejo em E com nota pedal
@@ -84,14 +85,14 @@ const enterSandman = `\\title "Enter Sandman (Intro)"
 :8 0.6 0.6 :16 0.6 0.6 :8 1.6 0.6 | :4 0.6 r.2. |`;
 
 // Back in Black — AC/DC
-// Riff principal: sequência de power chords em E/D/A
+// Combinação clássica de power chords e licks rápidos, um marco do rock
 const backInBlack = `\\title "Back in Black"
 \\artist "AC/DC"
 \\tempo 96
 \\instrument 25
 .
-:8 0.6 r.8 :4 0.6 | :8 3.5 3.5 :4 3.5 :8 0.5 0.5 | :4 2.5 :8 0.5 r.8 0.5 | :4 3.5 :8 3.5 3.5 :4 r.4 |
-:8 0.6 r.8 :4 0.6 | :8 3.5 3.5 :4 3.5 :8 0.5 0.5 | :4 2.5 :8 0.5 r.8 0.5 | :2 3.5 r.2 |`;
+:4 (0.6 2.5 2.4) r.8 :8 (0.4 2.3 3.2) (0.4 2.3 3.2) (0.4 2.3 3.2) r.8 | :8 (0.5 2.4 2.3) (0.5 2.4 2.3) (0.5 2.4 2.3) r.8 :8 3.1 0.1 3.2 0.2 3.3 0.3 |
+:4 (0.6 2.5 2.4) r.8 :8 (0.4 2.3 3.2) (0.4 2.3 3.2) (0.4 2.3 3.2) r.8 | :8 (0.5 2.4 2.3) (0.5 2.4 2.3) (0.5 2.4 2.3) r.8 :8 2.5 4.6 2.5 5.6 2.5 6.6 2.5 7.6 |`;
 
 // La Grange intro — ZZ Top
 // Boogie blues em A com nota pedal característica
@@ -100,20 +101,19 @@ const laGrange = `\\title "La Grange (Intro)"
 \\tempo 160
 \\instrument 25
 .
-:8 0.5 0.5 2.5 0.5 | :8 0.5 0.5 2.5 0.5 | :8 0.5 0.5 3.5 2.5 | :4 0.5 r.2. |
-:8 0.5 0.5 2.5 0.5 | :8 0.5 0.5 2.5 0.5 | :8 0.5 2.5 3.5 2.5 | :4 0.5 r.2. |`;
+:8 (0.5 2.4 2.3) r.8 (0.5 2.4 2.3) r.8 (0.5 2.4 2.3) (0.5 2.4 2.3) :4 (3.5 5.4 5.3) | :8 (0.5 2.4 2.3) r.8 (0.5 2.4 2.3) r.8 (0.5 2.4 2.3) (0.5 2.4 2.3) :4 (3.5 5.4 5.3) |`;
 
 // Paranoid — Black Sabbath
-// Riff rápido monofônico em E, excelente para treinar velocidade e alternating picking
+// Riff rápido em E, excelente para treinar velocidade e alternating picking
 const paranoid = `\\title "Paranoid"
 \\artist "Black Sabbath"
 \\tempo 164
 \\instrument 25
 .
-:8 0.6 2.6 4.6 :4 4.6 :8 3.6 | :8 3.6 4.6 3.6 :4 0.6 r.4 |
-:8 0.6 2.6 4.6 :4 4.6 :8 3.6 | :8 3.6 4.6 3.6 :2 0.6 |
-:8 0.6 2.6 4.6 :4 4.6 :8 3.6 | :8 3.6 4.6 3.6 :4 0.6 r.4 |
-:8 3.5 3.5 3.5 3.5 3.5 3.5 3.5 3.5 | :2 0.6 r.2 |`;
+:8 (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) | :8 12.5 14.5 12.5 14.5 12.5 14.5 r.4 |
+:8 (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) | :8 12.4 14.4 12.4 14.4 12.4 14.4 r.4 |
+:8 (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) (12.6 14.5) | :8 12.5 14.5 12.5 14.5 12.5 14.5 r.4 |
+:8 (10.5 12.4) (10.5 12.4) (10.5 12.4) (10.5 12.4) (10.5 12.4) (10.5 12.4) (10.5 12.4) (10.5 12.4) | :2 (12.6 14.5) r.2 |`;
 
 // ─── Song Registry ────────────────────────────────────────────────────────────
 
@@ -168,9 +168,9 @@ export const SONGS: Song[] = [
     genre: 'Heavy Metal',
     bpm: 73,
     durationLabel: '~2 min',
-    description: 'Power chords descendentes lentos e pesados. Bom para treinar mudança de posição com precisão.',
+    description: 'Riff clássico do heavy metal. Simples e pesado. Ensina a fazer slides.',
     alphaTex: ironMan,
-    color: '#64748b',
+    color: '#0284c7',
     category: 'riff',
   },
   {
@@ -222,7 +222,7 @@ export const SONGS: Song[] = [
     genre: 'Heavy Metal',
     bpm: 164,
     durationLabel: '~2 min',
-    description: 'Riff rápido monofonico em E. Treina velocidade, alternating picking e resistência.',
+    description: 'Riff rápido em E. Treina velocidade, alternating picking e resistência.',
     alphaTex: paranoid,
     color: '#9333ea',
     category: 'riff',
