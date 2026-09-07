@@ -600,6 +600,7 @@ export function Player({ song, onBack }: PlayerProps) {
                 }
                 lastHit={lastHit}
                 playbackPositionMs={playMode === 'music' ? playbackPositionMs : (timeline[currentBeatIndex]?.timePositionMs ?? 0)}
+                playbackSpeed={playMode === 'music' ? playbackSpeed : 1.0}
               />
             </div>
           )}
@@ -664,7 +665,12 @@ export function Player({ song, onBack }: PlayerProps) {
                   onChange={(e) => {
                     const speed = Number(e.target.value);
                     setPlaybackSpeed(speed);
-                    tabRef.current?.setPlaybackSpeed(speed);
+                    if (tabRef.current) {
+                      const isPlaying = tabRef.current.getPlayerState() === 1;
+                      if (isPlaying) tabRef.current.pause();
+                      tabRef.current.setPlaybackSpeed(speed);
+                      if (isPlaying) setTimeout(() => tabRef.current?.play(), 50);
+                    }
                   }}
                   style={{ width: '100%', cursor: 'pointer' }}
                 />

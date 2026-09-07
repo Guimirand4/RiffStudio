@@ -221,7 +221,7 @@ export const SONGS: Song[] = [
     category: 'riff',
   },
 
-  // ── Músicas Completas — Em Breve ──────────────────────────────────────────────
+  // ── Músicas Completas ────────────────────────────────────────────────────────
   {
     id: 'full-smoke-on-the-water',
     title: 'Smoke on the Water',
@@ -231,10 +231,9 @@ export const SONGS: Song[] = [
     bpm: 112,
     durationLabel: '~5 min',
     description: 'Música completa com intro, verso e refrão. Todas as seções incluindo o solo simplificado.',
-    alphaTex: smokeOnTheWater, // placeholder — will be replaced with full song
+    alphaTex: smokeOnTheWater,
     color: '#7c3aed',
     category: 'full-song',
-    comingSoon: true,
   },
   {
     id: 'full-seven-nation-army',
@@ -248,7 +247,6 @@ export const SONGS: Song[] = [
     alphaTex: sevenNationArmy,
     color: '#dc2626',
     category: 'full-song',
-    comingSoon: true,
   },
   {
     id: 'full-come-as-you-are',
@@ -262,7 +260,6 @@ export const SONGS: Song[] = [
     alphaTex: comeAsYouAre,
     color: '#0891b2',
     category: 'full-song',
-    comingSoon: true,
   },
   {
     id: 'full-paranoid',
@@ -276,7 +273,6 @@ export const SONGS: Song[] = [
     alphaTex: paranoid,
     color: '#9333ea',
     category: 'full-song',
-    comingSoon: true,
   },
   {
     id: 'full-back-in-black',
@@ -290,7 +286,6 @@ export const SONGS: Song[] = [
     alphaTex: backInBlack,
     color: '#d97706',
     category: 'full-song',
-    comingSoon: true,
   },
 ];
 

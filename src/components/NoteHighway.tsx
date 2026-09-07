@@ -25,6 +25,7 @@ interface NoteHighwayProps {
   isActive: boolean;
   lastHit: HitFeedback | null;
   playbackPositionMs: number;
+  playbackSpeed: number;
 }
 
 const NUM_STRINGS = 6;
@@ -75,6 +76,7 @@ export function NoteHighway({
   isActive,
   lastHit,
   playbackPositionMs,
+  playbackSpeed,
 }: NoteHighwayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const flashesRef = useRef<FlashState[]>([]);
@@ -86,12 +88,14 @@ export function NoteHighway({
   const bpmRef = useRef(bpm);
   const isActiveRef = useRef(isActive);
   const playbackPositionMsRef = useRef(playbackPositionMs);
+  const playbackSpeedRef = useRef(playbackSpeed);
 
   useEffect(() => { timelineRef.current = timeline; }, [timeline]);
   useEffect(() => { currentBeatRef.current = currentBeatIndex; }, [currentBeatIndex]);
   useEffect(() => { bpmRef.current = bpm; }, [bpm]);
   useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
   useEffect(() => { playbackPositionMsRef.current = playbackPositionMs; }, [playbackPositionMs]);
+  useEffect(() => { playbackSpeedRef.current = playbackSpeed; }, [playbackSpeed]);
 
   // ── Flash trigger ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -208,7 +212,8 @@ export function NoteHighway({
 
     // ── Compute px/ms ──────────────────────────────────────────────────────────
     const quarterMs = 60_000 / bpm;
-    const lookaheadMs = LOOKAHEAD_BEATS * quarterMs;
+    // Scale lookahead by playbackSpeed so notes fall at constant physical speed
+    const lookaheadMs = LOOKAHEAD_BEATS * quarterMs * playbackSpeedRef.current;
     const availableWidth = W - HIT_LINE_X - 16;
     const pxPerMs = availableWidth / lookaheadMs;
 

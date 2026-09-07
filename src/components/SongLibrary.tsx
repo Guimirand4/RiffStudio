@@ -180,13 +180,7 @@ export function SongLibrary({ onSelectSong }: SongLibraryProps) {
               Músicas inteiras do começo ao fim — verso, refrão, solo e tudo mais. O desafio real de tocar junto com a música.
             </p>
           </div>
-          <div className={styles.comingSoonBanner}>
-            <span className={styles.comingSoonIcon}>🚀</span>
-            <div>
-              <strong>Em desenvolvimento!</strong>
-              <p>Estamos codificando as partituras completas. As músicas abaixo estarão disponíveis em breve.</p>
-            </div>
-          </div>
+
           <div className={styles.grid}>
             {fullSongs.map(song => (
               <SongCard key={song.id} song={song} onSelect={onSelectSong} />
