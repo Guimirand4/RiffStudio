@@ -92,28 +92,7 @@ export function PracticeControls({
         </div>
       </div>
 
-      {/* Tolerance control */}
-      <div className={styles.toleranceSection}>
-        <div className={styles.toleranceHeader}>
-          <label htmlFor="tolerance-slider" className={styles.toleranceLabel}>
-            Tolerância de Afinação
-          </label>
-          <span className={styles.toleranceValue}>±{toleranceCents}¢</span>
-        </div>
-        <input
-          id="tolerance-slider"
-          type="range"
-          min={20}
-          max={100}
-          step={5}
-          value={toleranceCents}
-          onChange={(e) => onToleranceChange(Number(e.target.value))}
-        />
-        <div className={styles.toleranceHints}>
-          <span>Rigoroso (20¢)</span>
-          <span>Relaxado (100¢)</span>
-        </div>
-      </div>
+
 
       {/* Restart button */}
       {sessionStats.notesAttempted > 0 && (

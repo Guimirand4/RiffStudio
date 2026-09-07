@@ -639,10 +639,7 @@ export function Player({ song, onBack }: PlayerProps) {
           {/* Music Mode Controls */}
           {playMode === 'music' && (
             <div className={styles.musicControls}>
-              <div style={{ marginBottom: '12px', fontSize: '13px', color: '#ffb86c', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 184, 108, 0.1)', padding: '8px', borderRadius: '4px' }}>
-                <span>🎧</span>
-                <span>Use fones de ouvido para evitar que o microfone ouça a música.</span>
-              </div>
+
               <button
                 className={`btn btn-lg ${playerState === 1 ? 'btn-danger' : 'btn-primary'}`}
                 style={{ width: '100%', marginBottom: '8px' }}
@@ -653,22 +650,24 @@ export function Player({ song, onBack }: PlayerProps) {
               >
                 {playerState === 1 ? '⏸ Pausar Música' : '▶️ Tocar Música'}
               </button>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Velocidade:</span>
-                <select
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Velocidade:</span>
+                  <span style={{ fontSize: '14px', fontWeight: 'bold' }}>{Math.round(playbackSpeed * 100)}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={0.4}
+                  max={1.0}
+                  step={0.05}
                   value={playbackSpeed}
                   onChange={(e) => {
                     const speed = Number(e.target.value);
                     setPlaybackSpeed(speed);
                     tabRef.current?.setPlaybackSpeed(speed);
                   }}
-                  style={{ background: 'var(--bg-elevated)', color: '#fff', border: '1px solid var(--border-card)', borderRadius: '4px', padding: '4px' }}
-                >
-                  <option value={0.5}>50%</option>
-                  <option value={0.75}>75%</option>
-                  <option value={1}>100%</option>
-                  <option value={1.25}>125%</option>
-                </select>
+                  style={{ width: '100%', cursor: 'pointer' }}
+                />
               </div>
             </div>
           )}
