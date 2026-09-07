@@ -1,0 +1,141 @@
+/* GuitarTuner.module.css */
+
+.tuner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 24px;
+  background: linear-gradient(135deg, #0d1117 0%, #111827 100%);
+  border: 1px solid rgba(57, 255, 20, 0.15);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── String buttons ── */
+.strings {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stringBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: default;
+  transition: all 0.15s ease;
+}
+
+.stringActive {
+  border-color: var(--string-color, #39ff14);
+  background: color-mix(in srgb, var(--string-color, #39ff14) 12%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--string-color, #39ff14) 30%, transparent);
+}
+
+.stringNum {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-mono, monospace);
+}
+
+.stringName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--string-color, #fff);
+}
+
+/* ── Dial ── */
+.dial {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dialSvg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.noteDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: -8px;
+}
+
+.detectedNote {
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  transition: color 0.1s ease;
+  font-family: var(--font-mono, monospace);
+}
+
+.centsDisplay {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  transition: color 0.1s ease;
+}
+
+.targetNote {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+.inTuneLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: #39ff14;
+  margin-top: 4px;
+  animation: pulse 1s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.statusLabel {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+.errorLabel {
+  font-size: 13px;
+  color: #FF4757;
+  text-align: center;
+}
+
+/* ── Buttons ── */
+.tunerBtn {
+  width: 100%;
+  max-width: 260px;
+  font-weight: 700;
+}
+
+.tunerHint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  line-height: 1.5;
+  max-width: 340px;
+  margin: 0;
+}

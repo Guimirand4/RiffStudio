@@ -95,12 +95,48 @@
   background: var(--border-subtle);
 }
 
+/* ── Section navigation tabs ──────────────────────────────────────────────── */
+.sectionNav {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-card);
+  padding-bottom: 0;
+  animation: fade-in-up 0.4s 0.05s ease both;
+}
+
+.sectionTab {
+  padding: 10px 22px;
+  border-radius: 10px 10px 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  bottom: -1px;
+}
+
+.sectionTab:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sectionTabActive {
+  color: var(--accent);
+  background: var(--bg-card);
+  border-color: var(--border-card);
+  border-bottom-color: var(--bg-card);
+}
+
 /* Section */
 .subtitle {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  animation: fade-in-up 0.5s 0.1s ease both;
+  animation: fade-in-up 0.4s 0.1s ease both;
 }
 
 .sectionTitle {
@@ -114,6 +150,36 @@
   color: var(--text-secondary);
   max-width: 600px;
   line-height: 1.6;
+}
+
+/* ── Coming Soon Banner ──────────────────────────────────────────────────── */
+.comingSoonBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(255, 184, 108, 0.06);
+  border: 1px solid rgba(255, 184, 108, 0.2);
+  border-radius: var(--radius-lg);
+  animation: fade-in-up 0.4s 0.15s ease both;
+}
+
+.comingSoonIcon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.comingSoonBanner strong {
+  font-size: var(--text-base);
+  color: #ffb86c;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.comingSoonBanner p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0;
 }
 
 /* Song grid */
@@ -144,6 +210,15 @@
     0 0 0 1px var(--card-color, var(--accent)),
     0 12px 40px rgba(0, 0, 0, 0.6),
     0 0 40px color-mix(in srgb, var(--card-color, var(--accent)) 15%, transparent);
+}
+
+.cardComingSoon {
+  opacity: 0.65;
+  filter: saturate(0.6);
+}
+
+.cardComingSoon:hover {
+  transform: none;
 }
 
 /* Top accent bar */
@@ -246,6 +321,20 @@
   filter: brightness(1.1);
 }
 
+/* Coming soon badge (inside card) */
+.comingSoonBadge {
+  margin: 0 var(--space-6) var(--space-6);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.05);
+  border: 1px dashed rgba(255,255,255,0.15);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
 /* Tip */
 .tip {
   padding: var(--space-4) var(--space-6);
@@ -259,4 +348,86 @@
 
 .tip strong {
   color: var(--accent);
+}
+
+/* ── Tuner Section ─────────────────────────────────────────────────────────── */
+.tunerWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+  animation: fade-in-up 0.4s 0.1s ease both;
+}
+
+@media (max-width: 720px) {
+  .tunerWrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tunerGuide {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.tunerGuide h3 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 16px;
+}
+
+.tuningTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.tuningTable th {
+  text-align: left;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.tuningTable td {
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.tuningTable tr:last-child td {
+  border-bottom: none;
+}
+
+.tdNum {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent) !important;
+  width: 40px;
+}
+
+.tdName {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 16px !important;
+  color: var(--text-primary) !important;
+  width: 44px;
+}
+
+.tdFreq {
+  font-family: var(--font-mono);
+  font-size: 12px !important;
+  color: var(--text-muted) !important;
+  width: 90px;
+}
+
+.tdTip {
+  font-size: 12px !important;
+  color: var(--text-muted) !important;
 }

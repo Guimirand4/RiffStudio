@@ -7,6 +7,7 @@
  */
 
 export type Difficulty = 1 | 2 | 3 | 4 | 5;
+export type SongCategory = 'riff' | 'full-song';
 
 export interface Song {
   id: string;
@@ -19,6 +20,8 @@ export interface Song {
   description: string;
   alphaTex: string;
   color: string; // accent color for the card
+  category: SongCategory;
+  comingSoon?: boolean; // marks songs not yet fully encoded
 }
 
 // ─── AlphaTex Content ────────────────────────────────────────────────────────
@@ -108,7 +111,7 @@ const paranoid = `\\title "Paranoid"
 // ─── Song Registry ────────────────────────────────────────────────────────────
 
 export const SONGS: Song[] = [
-  // ── Nível 1 — Iniciante ────────────────────────────────────────────────────
+  // ── Riffs: Nível 1 — Iniciante ────────────────────────────────────────────────
   {
     id: 'smoke-on-the-water',
     title: 'Smoke on the Water',
@@ -120,6 +123,7 @@ export const SONGS: Song[] = [
     description: 'O riff mais famoso do rock. Apenas 3 notas distintas, padrão repetitivo — ideal para começar.',
     alphaTex: smokeOnTheWater,
     color: '#7c3aed',
+    category: 'riff',
   },
   {
     id: 'seven-nation-army',
@@ -132,9 +136,10 @@ export const SONGS: Song[] = [
     description: 'Linha de baixo icônica tocada na guitarra. Ótimo para praticar timing e notas longas.',
     alphaTex: sevenNationArmy,
     color: '#dc2626',
+    category: 'riff',
   },
 
-  // ── Nível 2 — Fácil ───────────────────────────────────────────────────────
+  // ── Riffs: Nível 2 — Fácil ───────────────────────────────────────────────────
   {
     id: 'come-as-you-are',
     title: 'Come As You Are',
@@ -143,9 +148,10 @@ export const SONGS: Song[] = [
     genre: 'Grunge',
     bpm: 120,
     durationLabel: '~2 min',
-    description: 'Introdução hipnótica baseada em arpejos. Treina mudança de posição e timing alternado.',
+    description: 'Introdução hipótica baseada em arpejos. Treina mudança de posição e timing alternado.',
     alphaTex: comeAsYouAre,
     color: '#0891b2',
+    category: 'riff',
   },
   {
     id: 'iron-man',
@@ -158,6 +164,7 @@ export const SONGS: Song[] = [
     description: 'Power chords descendentes lentos e pesados. Bom para treinar mudança de posição com precisão.',
     alphaTex: ironMan,
     color: '#64748b',
+    category: 'riff',
   },
   {
     id: 'enter-sandman',
@@ -170,6 +177,7 @@ export const SONGS: Song[] = [
     description: 'Arpejo com nota pedal no baixo. Treina separação de dedos e consistência de palhetada.',
     alphaTex: enterSandman,
     color: '#b45309',
+    category: 'riff',
   },
   {
     id: 'back-in-black',
@@ -182,6 +190,7 @@ export const SONGS: Song[] = [
     description: 'Sequência de power chords com ritmo sincopado. Clássico do rock que treina ataque e dinâmica.',
     alphaTex: backInBlack,
     color: '#d97706',
+    category: 'riff',
   },
   {
     id: 'la-grange',
@@ -194,9 +203,10 @@ export const SONGS: Song[] = [
     description: 'Boogie blues com nota pedal em A. Excelente para treinar groove, velocidade e nota pedal.',
     alphaTex: laGrange,
     color: '#059669',
+    category: 'riff',
   },
 
-  // ── Nível 3 — Intermediário ───────────────────────────────────────────────
+  // ── Riffs: Nível 3 — Intermediário ───────────────────────────────────────────
   {
     id: 'paranoid',
     title: 'Paranoid',
@@ -205,9 +215,82 @@ export const SONGS: Song[] = [
     genre: 'Heavy Metal',
     bpm: 164,
     durationLabel: '~2 min',
-    description: 'Riff rápido monofônico em E. Treina velocidade, alternating picking e resistência.',
+    description: 'Riff rápido monofonico em E. Treina velocidade, alternating picking e resistência.',
     alphaTex: paranoid,
     color: '#9333ea',
+    category: 'riff',
+  },
+
+  // ── Músicas Completas — Em Breve ──────────────────────────────────────────────
+  {
+    id: 'full-smoke-on-the-water',
+    title: 'Smoke on the Water',
+    artist: 'Deep Purple',
+    difficulty: 2,
+    genre: 'Classic Rock',
+    bpm: 112,
+    durationLabel: '~5 min',
+    description: 'Música completa com intro, verso e refrão. Todas as seções incluindo o solo simplificado.',
+    alphaTex: smokeOnTheWater, // placeholder — will be replaced with full song
+    color: '#7c3aed',
+    category: 'full-song',
+    comingSoon: true,
+  },
+  {
+    id: 'full-seven-nation-army',
+    title: 'Seven Nation Army',
+    artist: 'The White Stripes',
+    difficulty: 2,
+    genre: 'Alternative Rock',
+    bpm: 124,
+    durationLabel: '~3 min',
+    description: 'Música completa com todos os riffs e a seção do verso. Timing e groove do começo ao fim.',
+    alphaTex: sevenNationArmy,
+    color: '#dc2626',
+    category: 'full-song',
+    comingSoon: true,
+  },
+  {
+    id: 'full-come-as-you-are',
+    title: 'Come As You Are',
+    artist: 'Nirvana',
+    difficulty: 3,
+    genre: 'Grunge',
+    bpm: 120,
+    durationLabel: '~3 min 40s',
+    description: 'Música completa com intro, verso, pré-refrão e refrão. O arpejo que definiu uma geração.',
+    alphaTex: comeAsYouAre,
+    color: '#0891b2',
+    category: 'full-song',
+    comingSoon: true,
+  },
+  {
+    id: 'full-paranoid',
+    title: 'Paranoid',
+    artist: 'Black Sabbath',
+    difficulty: 4,
+    genre: 'Heavy Metal',
+    bpm: 164,
+    durationLabel: '~2 min 50s',
+    description: 'A música completa com verso, refrão e solo. Uma das mais rápidas da classe iniciante-intermediário.',
+    alphaTex: paranoid,
+    color: '#9333ea',
+    category: 'full-song',
+    comingSoon: true,
+  },
+  {
+    id: 'full-back-in-black',
+    title: 'Back in Black',
+    artist: 'AC/DC',
+    difficulty: 3,
+    genre: 'Hard Rock',
+    bpm: 96,
+    durationLabel: '~4 min 15s',
+    description: 'Desde o riff de abertura icônico até o refrão poderoso. Power chords e ritmo sincopado ao longo de toda a música.',
+    alphaTex: backInBlack,
+    color: '#d97706',
+    category: 'full-song',
+    comingSoon: true,
   },
 ];
 
