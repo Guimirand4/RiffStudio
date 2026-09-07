@@ -7,6 +7,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import type { BeatStringNote } from '../lib/beatTimeline';
+import { FingeringLegend } from './FingeringLegend';
 import type { MatchResult } from '../lib/noteMatcher';
 import styles from './NoteHighway.module.css';
 
@@ -382,6 +383,7 @@ export function NoteHighway({
 
   return (
     <div className={styles.highway}>
+      <FingeringLegend />
       <canvas ref={canvasRef} className={styles.canvas} />
     </div>
   );
