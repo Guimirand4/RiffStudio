@@ -11,6 +11,7 @@ import { fullSevenNationArmy } from './tabs/sevenNationArmy';
 import { fullComeAsYouAre } from './tabs/comeAsYouAre';
 import { fullParanoid } from './tabs/paranoid';
 import { fullBackInBlack } from './tabs/backInBlack';
+import { californicationRiff, fullCalifornication } from './tabs/californication';
 
 export type Difficulty = 1 | 2 | 3 | 4 | 5;
 export type SongCategory = 'riff' | 'full-song';
@@ -226,6 +227,19 @@ export const SONGS: Song[] = [
     color: '#9333ea',
     category: 'riff',
   },
+  {
+    id: 'californication-intro',
+    title: 'Californication (Intro)',
+    artist: 'Red Hot Chili Peppers',
+    difficulty: 3,
+    genre: 'Alternative Rock',
+    bpm: 96,
+    durationLabel: '~12s',
+    description: 'O famoso dedilhado inicial alternando entre Am e Fmaj7.',
+    alphaTex: californicationRiff,
+    color: '#0ea5e9',
+    category: 'riff',
+  },
 
   // ── Músicas Completas ────────────────────────────────────────────────────────
   {
@@ -291,6 +305,19 @@ export const SONGS: Song[] = [
     description: 'Desde o riff de abertura icônico até o refrão poderoso. Power chords e ritmo sincopado ao longo de toda a música.',
     alphaTex: fullBackInBlack,
     color: '#d97706',
+    category: 'full-song',
+  },
+  {
+    id: 'full-californication',
+    title: 'Californication',
+    artist: 'Red Hot Chili Peppers',
+    difficulty: 3,
+    genre: 'Alternative Rock',
+    bpm: 96,
+    durationLabel: '~5 min 30s',
+    description: 'A música completa incluindo a introdução clássica, versos, pré-refrão e refrão.',
+    alphaTex: fullCalifornication,
+    color: '#0ea5e9',
     category: 'full-song',
   },
 ];
