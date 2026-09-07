@@ -28,14 +28,14 @@ interface NoteHighwayProps {
 }
 
 const NUM_STRINGS = 6;
-const LABEL_WIDTH = 40;
-const HIT_LINE_OFFSET = 60;
+const LABEL_WIDTH = 48;
+const HIT_LINE_OFFSET = 70;
 const HIT_LINE_X = LABEL_WIDTH + HIT_LINE_OFFSET;
-const NOTE_RADIUS = 13;
+const NOTE_RADIUS = 16;
 const FLASH_DURATION_MS = 600;
 
 /** How many beats to show ahead of the hit line. Controls visual density. */
-const LOOKAHEAD_BEATS = 4;
+const LOOKAHEAD_BEATS = 6;
 
 /** Standard tab order: 1 (high e) at top, 6 (low E) at bottom. */
 const STRING_ORDER = [1, 2, 3, 4, 5, 6] as const;
@@ -138,9 +138,8 @@ export function NoteHighway({
     const H = canvas.clientHeight;
 
     // ── Layout Geometry ──
-    const NECK_HEIGHT = 160;
-    // Align neck in the lower half
-    const NECK_TOP = H - NECK_HEIGHT - 30; 
+    const NECK_HEIGHT = 220; // bigger neck so strings are easier to read
+    const NECK_TOP = H - NECK_HEIGHT - 20;
     const LANE_H = NECK_HEIGHT / NUM_STRINGS;
 
     // DPR-aware clear
@@ -185,7 +184,7 @@ export function NoteHighway({
       // Label
       const color = STRING_COLOR[s];
       ctx.fillStyle = color;
-      ctx.font = 'bold 16px Inter, system-ui, sans-serif';
+      ctx.font = 'bold 18px Inter, system-ui, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(STRING_LABEL[s], LABEL_WIDTH / 2, y);
@@ -229,10 +228,14 @@ export function NoteHighway({
       const isPast = beat.beatIndex < currentBeatIdx;
       const isCurrent = beat.beatIndex === currentBeatIdx;
 
-      // Note duration width
-      // Subtracting a bit so consecutive notes have a gap
+      // Note duration width — cap to 80% of time gap to next note to prevent overlap
       const rawWidth = beat.durationMs * pxPerMs;
-      const pillWidth = Math.max(NOTE_RADIUS * 2, rawWidth - 6);
+      // Find next non-rest beat to compute gap
+      const nextBeat = timeline.slice(beat.beatIndex + 1).find(b => !b.isRest);
+      const maxWidth = nextBeat
+        ? (nextBeat.timePositionMs - beat.timePositionMs) * pxPerMs * 0.80
+        : rawWidth;
+      const pillWidth = Math.max(NOTE_RADIUS * 2, Math.min(rawWidth, maxWidth));
       
       beat.notes.forEach((note) => {
         const y = laneY(note.stringNumber);
@@ -270,10 +273,10 @@ export function NoteHighway({
           ctx.shadowBlur = 0;
         }
 
-        // Fret number text
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = alpha < 0.5 ? color : '#111'; // dark text for high contrast on neon
-        ctx.font = `bold 12px Inter, system-ui, sans-serif`;
+        // Fret number text — drawn at pill's left arc center (the hit position)
+        ctx.globalAlpha = Math.max(alpha, 0.6);
+        ctx.fillStyle = '#000'; // always black for contrast on neon
+        ctx.font = `bold 15px Inter, system-ui, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(String(note.fret), x, y);
@@ -320,10 +323,10 @@ export function NoteHighway({
       ctx.restore();
     });
 
-    // ── Idle overlay ────────────────────────────────────────────────────────────
-    if (!isActiveRef.current) {
+    // ── Idle overlay — only shown when there are no notes to see ────────────
+    if (!isActiveRef.current && timelineRef.current.length === 0) {
       ctx.save();
-      ctx.fillStyle = 'rgba(15,23,42,0.7)';
+      ctx.fillStyle = 'rgba(15,23,42,0.8)';
       ctx.fillRect(0, 0, W, H);
       ctx.fillStyle = '#ffffff';
       ctx.font = '600 16px Inter, system-ui, sans-serif';

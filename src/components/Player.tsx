@@ -203,7 +203,18 @@ export function Player({ song, onBack }: PlayerProps) {
   const handlePlayerStateChanged = useCallback((args: any) => {
     // alphaTab sometimes passes the state directly, or in an args object
     const newState = args?.state !== undefined ? args.state : args;
-    setPlayerState(newState);
+    setPlayerState(prev => {
+      // Song just ended (was playing, now stopped) — reset so notes look fresh on next play
+      if (prev === 1 && newState === 0) {
+        hitBeatsRef.current.clear();
+        missedBeatsRef.current.clear();
+        setPlaybackPositionMs(0);
+        setCurrentBeatIndex(0);
+        beatIndexRef.current = 0;
+        setExpectedNote(tabRef.current?.getNoteAtBeat(0) ?? null);
+      }
+      return newState;
+    });
   }, []);
 
   const handlePlayerPositionChanged = useCallback((args: any) => {
