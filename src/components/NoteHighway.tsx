@@ -90,6 +90,18 @@ export function NoteHighway({
   const flashesRef = useRef<FlashState[]>([]);
   const rafRef = useRef<number>(0);
 
+  // Bouncing ball state
+  const ballRef = useRef<{
+    fromY: number;      // starting Y of the jump
+    toY: number;        // target Y of the jump
+    fromBeat: number;   // beat index where jump started
+    toBeat: number;     // beat index we're jumping to
+    startMs: number;    // wall-clock when jump started
+    durationMs: number; // how long the jump takes
+    x: number;          // current X (moves from HIT_LINE_X slightly right while in air)
+  } | null>(null);
+  const lastBallBeatRef = useRef<number>(-1);
+
   // Stable refs for RAF loop
   const timelineRef = useRef(timeline);
   const currentBeatRef = useRef(currentBeatIndex);
@@ -104,6 +116,14 @@ export function NoteHighway({
   useEffect(() => { isActiveRef.current = isActive; }, [isActive]);
   useEffect(() => { playbackPositionMsRef.current = playbackPositionMs; }, [playbackPositionMs]);
   useEffect(() => { playbackSpeedRef.current = playbackSpeed; }, [playbackSpeed]);
+
+  // Reset ball when song restarts (beat goes back to 0)
+  useEffect(() => {
+    if (currentBeatIndex === 0) {
+      ballRef.current = null;
+      lastBallBeatRef.current = -1;
+    }
+  }, [currentBeatIndex]);
 
   // ── Flash trigger ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -228,6 +248,122 @@ export function NoteHighway({
     const currentTimeMs = playbackPositionMsRef.current;
     const MIN_X = LABEL_WIDTH - 200; // allow long pills to pass off-screen safely
     const MAX_X = W + 200;
+    const now = performance.now();
+
+    // ── Bouncing Ball Logic ───────────────────────────────────────────────────
+    // Find the current beat and the next beat to animate the ball between them
+    const currentBeatIdx2 = currentBeatRef.current;
+    const nonRestBeats = timeline.filter(b => !b.isRest);
+
+    // Find the "current" non-rest beat (what we're on right now)
+    const curBeatInTimeline = nonRestBeats.find(b => b.beatIndex === currentBeatIdx2)
+      ?? nonRestBeats.find(b => b.beatIndex >= currentBeatIdx2)
+      ?? nonRestBeats[0];
+
+    // Find the NEXT beat after the current one
+    const nextBeatInTimeline = curBeatInTimeline
+      ? nonRestBeats.find(b => b.beatIndex > curBeatInTimeline.beatIndex)
+      : null;
+
+    // Initialize ball when we first arrive on a beat
+    if (curBeatInTimeline && lastBallBeatRef.current !== curBeatInTimeline.beatIndex) {
+      lastBallBeatRef.current = curBeatInTimeline.beatIndex;
+
+      const fromY = ballRef.current?.toY ?? laneY(curBeatInTimeline.notes[0]?.stringNumber ?? 6);
+      const toY = laneY(curBeatInTimeline.notes[0]?.stringNumber ?? 6);
+
+      // Duration of the jump = gap to next note (or 500ms fallback)
+      let jumpDurationMs = 500;
+      if (nextBeatInTimeline && curBeatInTimeline) {
+        jumpDurationMs = Math.max(200, nextBeatInTimeline.timePositionMs - curBeatInTimeline.timePositionMs);
+      }
+
+      ballRef.current = {
+        fromY,
+        toY,
+        fromBeat: lastBallBeatRef.current,
+        toBeat: nextBeatInTimeline?.beatIndex ?? lastBallBeatRef.current,
+        startMs: now,
+        durationMs: jumpDurationMs,
+        x: HIT_LINE_X,
+      };
+    }
+
+    // Animate ball
+    const BALL_R = 13;
+    if (ballRef.current && curBeatInTimeline) {
+      const ball = ballRef.current;
+      const elapsed = now - ball.startMs;
+      const t = Math.min(elapsed / ball.durationMs, 1); // 0 → 1
+
+      // Sinusoidal arc: ball starts at toY (current note), bounces UP, lands at next note
+      const nextNoteY = nextBeatInTimeline
+        ? laneY(nextBeatInTimeline.notes[0]?.stringNumber ?? 6)
+        : ball.toY;
+
+      // Current Y: lerp from current note to next note
+      const linearY = ball.toY + (nextNoteY - ball.toY) * t;
+      // Arc height: goes UP during the jump (negative = up on canvas)
+      const arcHeight = Math.abs(nextNoteY - ball.toY) * 0.5 + 30;
+      const arcY = linearY - Math.sin(t * Math.PI) * arcHeight;
+
+      // Ball X: stays at hit line but pulses slightly when idle
+      const ballX = HIT_LINE_X;
+      const ballY = arcY;
+
+      // Glow trail
+      const glowColor = curBeatInTimeline.notes[0]
+        ? FINGER_COLORS[curBeatInTimeline.notes[0].finger ?? 0]
+        : '#ffffff';
+
+      // Shadow glow
+      ctx.save();
+      ctx.shadowColor = glowColor;
+      ctx.shadowBlur = 20;
+
+      // Ball fill with radial gradient
+      const ballGrad = ctx.createRadialGradient(ballX - 3, ballY - 3, 1, ballX, ballY, BALL_R);
+      ballGrad.addColorStop(0, '#ffffff');
+      ballGrad.addColorStop(0.4, glowColor);
+      ballGrad.addColorStop(1, hexToRgba(glowColor, 0.5));
+
+      ctx.fillStyle = ballGrad;
+      ctx.beginPath();
+      ctx.arc(ballX, ballY, BALL_R, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pulsing ring when at rest (t near 0 or 1)
+      const ringAlpha = t < 0.15 || t > 0.85 ? 0.6 * (1 - Math.abs(t < 0.5 ? t / 0.15 : (1 - t) / 0.15)) : 0;
+      if (ringAlpha > 0) {
+        ctx.globalAlpha = ringAlpha;
+        ctx.strokeStyle = glowColor;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, BALL_R + 6, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Small "target" circle at next note's position on the hit line
+      if (nextBeatInTimeline && t > 0.0) {
+        const targetY = laneY(nextBeatInTimeline.notes[0]?.stringNumber ?? 6);
+        const targetColor = nextBeatInTimeline.notes[0]
+          ? FINGER_COLORS[nextBeatInTimeline.notes[0].finger ?? 0]
+          : '#ffffff';
+        ctx.globalAlpha = Math.min(t * 2, 0.5);
+        ctx.strokeStyle = targetColor;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.arc(HIT_LINE_X, targetY, BALL_R + 2, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    }
+
 
     const visibleBeats = timeline.filter((beat) => {
       if (beat.isRest) return false;
@@ -299,7 +435,6 @@ export function NoteHighway({
     });
 
     // ── Flash overlays ──────────────────────────────────────────────────────────
-    const now = performance.now();
     flashesRef.current = flashesRef.current.filter(
       (f) => now - f.startTime < FLASH_DURATION_MS,
     );
